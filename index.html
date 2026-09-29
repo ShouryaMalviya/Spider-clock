@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spider Clock | Animated Analog Timepiece</title>
+  <meta name="description" content="A visually striking animated analog clock featuring a suspended spider whose legs act as the hour and minute hands, with a continuous sweeping second hand and an intricate web face.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;1,400&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient Atmospheric Vignette & Particles -->
+  <div class="ambient-glow" id="ambientGlow"></div>
+  <canvas id="ambientCanvas" class="ambient-canvas"></canvas>
+
+  <!-- Hanging Silk Thread from Top Center of Screen to Clock Center -->
+  <div class="silk-thread-container">
+    <div class="silk-thread" id="silkThread">
+      <div class="silk-shimmer"></div>
+    </div>
+  </div>
+
+  <!-- Main Clock Container -->
+  <main class="clock-stage" id="clockStage" role="region" aria-label="Spider Analog Clock">
+    
+    <div class="clock-wrapper">
+      <svg id="spiderClockSvg" class="clock-svg" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- Radial Web Shading & Filters -->
+          <radialGradient id="webRadialFade" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.32"/>
+            <stop offset="50%" stop-color="#ffffff" stop-opacity="0.18"/>
+            <stop offset="85%" stop-color="#ffffff" stop-opacity="0.08"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+          </radialGradient>
+
+          <!-- Spider Pearl Gradient -->
+          <linearGradient id="spiderWhiteGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="45%" stop-color="#F1F5F9"/>
+            <stop offset="80%" stop-color="#E2E8F0"/>
+            <stop offset="100%" stop-color="#CBD5E1"/>
+          </linearGradient>
+
+          <!-- Golden/Ivory Accent Gradient -->
+          <linearGradient id="spiderAccentGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="100%" stop-color="#F8FAFC"/>
+          </linearGradient>
+
+          <!-- Luminous Second Hand Gradient -->
+          <linearGradient id="secondHandGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1"/>
+            <stop offset="70%" stop-color="#FED7AA" stop-opacity="0.95"/>
+            <stop offset="100%" stop-color="#F97316" stop-opacity="0.8"/>
+          </linearGradient>
+
+          <!-- Shadow Filters -->
+          <filter id="spiderShadow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#1c0f02" flood-opacity="0.55"/>
+          </filter>
+
+          <filter id="handShadow" x="-40%" y="-40%" width="180%" height="180%">
+            <feDropShadow dx="1" dy="4" stdDeviation="4" flood-color="#241203" flood-opacity="0.45"/>
+          </filter>
+
+          <filter id="glowSubtle" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="2.5" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          </filter>
+
+          <filter id="secondGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feMerge>
+              <feMergeNode in="blur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+
+        <!-- Center of Clock is (400, 400) -->
+
+        <!-- LAYER 1: Subtle Intricate Mandala / Lace Web Pattern -->
+        <g id="webGroup" class="web-group">
+          <!-- Dynamic web lines & intricate mandala generated and enhanced by script -->
+          <g id="mandalaRings" class="mandala-rings"></g>
+          <g id="radialSpokes" class="radial-spokes"></g>
+          <g id="spiralStrands" class="spiral-strands"></g>
+          <g id="dewDrops" class="dew-drops"></g>
+        </g>
+
+        <!-- LAYER 2: Minute Ticks & Hour Pips -->
+        <g id="dialTicks" class="dial-ticks"></g>
+
+        <!-- LAYER 3: Clock Face Numbers 1 to 12 -->
+        <g id="numbersGroup" class="numbers-group" role="presentation"></g>
+
+        <!-- LAYER 4: Static Resting Spider Legs (Pairs 2, 3, 4 = 6 Legs) -->
+        <!-- These wrap around the spider body, resting on web strands with subtle idle breathing -->
+        <g id="spiderRestingLegs" class="spider-resting-legs" filter="url(#spiderShadow)">
+          <!-- Left side 3 legs -->
+          <!-- Leg L2 -->
+          <path id="legL2" class="resting-leg leg-l2" d="M 390 395 C 360 380, 315 365, 290 330 C 275 310, 260 280, 245 250" />
+          <!-- Leg L3 -->
+          <path id="legL3" class="resting-leg leg-l3" d="M 388 402 C 345 398, 295 405, 265 425 C 240 442, 220 470, 205 500" />
+          <!-- Leg L4 (Rear left) -->
+          <path id="legL4" class="resting-leg leg-l4" d="M 391 412 C 355 428, 310 460, 290 500 C 278 525, 270 560, 265 595" />
+
+          <!-- Right side 3 legs -->
+          <!-- Leg R2 -->
+          <path id="legR2" class="resting-leg leg-r2" d="M 410 395 C 440 380, 485 365, 510 330 C 525 310, 540 280, 555 250" />
+          <!-- Leg R3 -->
+          <path id="legR3" class="resting-leg leg-r3" d="M 412 402 C 455 398, 505 405, 535 425 C 560 442, 580 470, 595 500" />
+          <!-- Leg R4 (Rear right) -->
+          <path id="legR4" class="resting-leg leg-r4" d="M 409 412 C 445 428, 490 460, 510 500 C 522 525, 530 560, 535 595" />
+        </g>
+
+        <!-- LAYER 5: Dynamic Clock Hands (Front Spider Legs 1L & 1R, and Second Filament) -->
+        <g id="clockHandsGroup" class="clock-hands-group">
+          
+          <!-- HOUR HAND: Left Front Spider Leg (Integrated Leg 1L) -->
+          <!-- HOUR HAND: Left Front Spider Leg (Integrated Leg 1L) -->
+          <!-- Rotates around (400, 400) -->
+          <g id="hourHandWrapper" class="hand-wrapper" filter="url(#handShadow)">
+            <g id="hourHand" class="spider-leg-hand hour-hand">
+              <!-- Articulated Spider Leg Shape for Hour Hand (length ~185px) -->
+              <!-- Coxa & Femur Segment -->
+              <path class="leg-segment segment-coxa" d="M 398 400 Q 394 365, 392 342 Q 391 328, 388 312" />
+              <!-- Patella / Knee Joint -->
+              <circle class="leg-joint" cx="388" cy="312" r="4.2" />
+              <!-- Tibia & Metatarsus -->
+              <path class="leg-segment segment-tibia" d="M 388 312 Q 393 285, 397 260 Q 399 245, 399 232" />
+              <!-- Joint Accent Pip -->
+              <circle class="leg-joint-subtle" cx="399" cy="232" r="2.8" />
+              <!-- Tarsus / Pointer Claw -->
+              <path class="leg-segment segment-claw" d="M 399 232 L 400 220" />
+              <polygon class="leg-tip-indicator" points="398,222 402,222 400,215" />
+            </g>
+          </g>
+
+          <!-- MINUTE HAND: Right Front Spider Leg (Integrated Leg 1R) -->
+          <!-- Rotates around (400, 400) -->
+          <g id="minuteHandWrapper" class="hand-wrapper" filter="url(#handShadow)">
+            <g id="minuteHand" class="spider-leg-hand minute-hand">
+              <!-- Longer, Sleeker Articulated Spider Leg Shape for Minute Hand (length ~255px) -->
+              <!-- Coxa & Femur Segment -->
+              <path class="leg-segment segment-coxa-long" d="M 402 400 Q 406 355, 410 320 Q 412 290, 412 265" />
+              <!-- Patella / Knee Joint -->
+              <circle class="leg-joint" cx="412" cy="265" r="3.8" />
+              <!-- Tibia & Metatarsus -->
+              <path class="leg-segment segment-tibia-long" d="M 412 265 Q 408 225, 404 195 Q 402 175, 401 155" />
+              <!-- Joint Pip -->
+              <circle class="leg-joint-subtle" cx="401" cy="155" r="2.4" />
+              <!-- Tarsus / Needle Claw extending outward to the clock numerals -->
+              <path class="leg-segment segment-claw-long" d="M 401 155 L 400 150" />
+              <polygon class="leg-tip-indicator minute-tip" points="398.5,152 401.5,152 400,145" />
+            </g>
+          </g>
+
+          <!-- SECOND HAND: Ultra-thin Luminous Silk Needle Hand (length ~270px) -->
+          <!-- Rotates around (400, 400) smoothly -->
+          <g id="secondHandWrapper" class="hand-wrapper" filter="url(#secondGlow)">
+            <g id="secondHand" class="second-filament-hand">
+              <!-- Counterbalance tail extending down -->
+              <line class="second-tail" x1="400" y1="400" x2="400" y2="445" />
+              <circle class="second-tail-pip" cx="400" cy="445" r="2.2" />
+              <!-- Main slender luminous needle hand reaching past the minutes -->
+              <line class="second-needle" x1="400" y1="400" x2="400" y2="130" />
+              <!-- Silk droplet marker near the tip -->
+              <circle class="second-droplet" cx="400" cy="148" r="3" />
+              <!-- Glowing needle tip -->
+              <circle class="second-tip-pip" cx="400" cy="130" r="1.8" />
+            </g>
+          </g>
+
+        </g>
+
+        <!-- Dedicated SVG Silk Anchor Line from top of SVG (y=0) to spider (y=372) -->
+        <line class="svg-silk-thread" x1="400" y1="0" x2="400" y2="372" stroke="#FFFFFF" stroke-width="1.6" stroke-opacity="0.9" />
+
+        <!-- LAYER 6: Central Spider Body & Cephalothorax -->
+        <!-- Placed at the exact center (400, 400), casting an organic presence -->
+        <g id="spiderBodyGroup" class="spider-body-group" filter="url(#spiderShadow)">
+          
+          <!-- Silk Spinneret Anchor Point at Abdomen Top -->
+          <path class="spinneret-anchor" d="M 398 372 L 402 372 L 400 370 Z" fill="#ffffff" />
+
+          <!-- Spider Abdomen (Upper / Posterior bulb) -->
+          <ellipse class="spider-abdomen" cx="400" cy="418" rx="14" ry="20" fill="url(#spiderWhiteGrad)" />
+          
+          <!-- Abdomen Carapace Pattern (Delicate subtle markings) -->
+          <path class="abdomen-carapace" d="M 400 404 Q 403 416 400 428 Q 397 416 400 404" fill="none" stroke="rgba(163, 78, 1, 0.4)" stroke-width="1.2" />
+          <line x1="395" y1="412" x2="405" y2="412" stroke="rgba(163, 78, 1, 0.3)" stroke-width="1" />
+          <line x1="394" y1="420" x2="406" y2="420" stroke="rgba(163, 78, 1, 0.3)" stroke-width="1" />
+          <line x1="396" y1="428" x2="404" y2="428" stroke="rgba(163, 78, 1, 0.3)" stroke-width="1" />
+
+          <!-- Pedicel (connection waist) -->
+          <rect x="398" y="399" width="4" height="4" rx="2" fill="#E2E8F0" />
+
+          <!-- Spider Cephalothorax (Head & Thorax) -->
+          <ellipse class="spider-thorax" cx="400" cy="392" rx="12" ry="11" fill="url(#spiderWhiteGrad)" />
+          
+          <!-- Chelicerae / Fangs & Pedipalps (Front mouthparts) -->
+          <path class="spider-pedipalp-l" d="M 395 382 Q 393 376 391 374" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round" fill="none" />
+          <path class="spider-pedipalp-r" d="M 405 382 Q 407 376 409 374" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round" fill="none" />
+          
+          <!-- Spider Eyes (8 Arachnid Eyes) -->
+          <!-- Primary central eyes -->
+          <circle class="spider-eye primary-eye" cx="398" cy="385" r="1.5" fill="#451a03" />
+          <circle class="spider-eye primary-eye" cx="402" cy="385" r="1.5" fill="#451a03" />
+          <circle class="eye-reflection" cx="397.6" cy="384.6" r="0.5" fill="#FFFFFF" />
+          <circle class="eye-reflection" cx="401.6" cy="384.6" r="0.5" fill="#FFFFFF" />
+          <!-- Lateral secondary eyes -->
+          <circle class="spider-eye" cx="395" cy="386.5" r="1" fill="#451a03" />
+          <circle class="spider-eye" cx="405" cy="386.5" r="1" fill="#451a03" />
+          <circle class="spider-eye" cx="394" cy="388.5" r="0.9" fill="#451a03" />
+          <circle class="spider-eye" cx="406" cy="388.5" r="0.9" fill="#451a03" />
+
+          <!-- Center Pivot Pearl (Cap covering hand axle) -->
+          <circle class="center-pearl" cx="400" cy="400" r="4.5" fill="url(#spiderAccentGrad)" stroke="#CBD5E1" stroke-width="1" />
+          <circle class="center-pearl-glow" cx="400" cy="400" r="2" fill="#FFFFFF" />
+        </g>
+
+      </svg>
+    </div>
+
+    <!-- Minimalist Glass Floating Control Bar & Time Indicator -->
+    <footer class="hud-bar" id="hudBar">
+      <div class="time-readout" id="digitalTimeBadge" title="Local Time">
+        <span class="digital-time" id="digitalTime">12:00:00</span>
+        <span class="digital-ampm" id="digitalAmPm">PM</span>
+      </div>
+
+      <div class="hud-controls">
+        <button type="button" class="hud-btn" id="sweepToggleBtn" title="Toggle Smooth / Stepped Second Hand" aria-label="Toggle second hand sweep mode">
+          <svg class="hud-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"/>
+            <polyline points="12 7 12 12 15 15"/>
+          </svg>
+          <span id="sweepModeLabel">Smooth</span>
+        </button>
+
+        <button type="button" class="hud-btn" id="soundToggleBtn" title="Toggle Ambient Silk Tick / Web Chime" aria-label="Toggle ambient web chime sound">
+          <svg class="hud-icon" id="soundIcon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            <line id="soundMuteSlash" x1="1" y1="1" x2="23" y2="23" stroke="#F87171" stroke-width="2.5" />
+          </svg>
+          <span id="soundLabel">Sound Off</span>
+        </button>
+
+        <button type="button" class="hud-btn" id="webPulseBtn" title="Touch Web Strands (Pluck Silk)" aria-label="Interact with web strands">
+          <svg class="hud-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14"/>
+          </svg>
+          <span>Pluck Web</span>
+        </button>
+      </div>
+    </footer>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

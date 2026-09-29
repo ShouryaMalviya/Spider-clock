@@ -1,0 +1,587 @@
+/* ==========================================================================
+   SPIDER CLOCK - Master Stylesheet
+   Warm-toned, Organic Articulated Arachnid Analog Timepiece
+   ========================================================================== */
+
+:root {
+  --bg-gradient: linear-gradient(135deg, #a34e01 0%, #654201 100%);
+  --clock-size: min(84vmin, 680px);
+  --color-spider: #FFFFFF;
+  --color-spider-shade: #E2E8F0;
+  --color-web-line: rgba(255, 255, 255, 0.22);
+  --color-web-faint: rgba(255, 255, 255, 0.12);
+  --color-web-glow: rgba(255, 255, 255, 0.4);
+  --color-second: #FFF5EA;
+  --color-second-glow: #F97316;
+  --color-text: #FFFFFF;
+  --color-text-subtle: rgba(255, 255, 255, 0.82);
+  --font-dial: 'Outfit', 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'Space Grotesk', monospace;
+  --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Base Body Styling (matching exact user specification) */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #cadfe8; /* Fallback base color as specified */
+  background: linear-gradient(135deg, #a34e01 0%, #654201 100%);
+  background-repeat: no-repeat;
+  color: #FFF;
+  height: 100vh; /* Ensure it takes full screen height for centering */
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--font-dial);
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+/* Ambient Subtle Radial Vignette for rich depth */
+.ambient-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 180, 100, 0.12) 0%, rgba(50, 20, 0, 0.45) 85%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Ambient Canvas for very subtle floating silk dust motes */
+.ambient-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.65;
+}
+
+/* ==========================================================================
+   Hanging Silk Thread: Top Center of Screen to Spider's Center
+   ========================================================================== */
+.silk-thread-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 6; /* Just above web, behind spider body */
+}
+
+.silk-thread {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1.5px;
+  /* Exactly 50vh reaches the exact center of screen where the spider is anchored */
+  height: 50vh;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.65) 40%,
+    rgba(255, 255, 255, 0.95) 85%,
+    #FFFFFF 100%
+  );
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 230, 200, 0.4);
+}
+
+/* Shimmer traveling down the silk thread */
+.silk-shimmer {
+  position: absolute;
+  top: -60px;
+  left: -2px;
+  width: 5px;
+  height: 60px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255, 255, 255, 0.95) 50%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  filter: blur(1px);
+  animation: threadShimmer 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes threadShimmer {
+  0% {
+    top: -60px;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   Main Clock Stage & SVG Positioning
+   ========================================================================== */
+.clock-stage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+}
+
+.clock-wrapper {
+  position: relative;
+  width: var(--clock-size);
+  height: var(--clock-size);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.clock-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+  filter: drop-shadow(0 15px 35px rgba(35, 15, 0, 0.45));
+}
+
+/* ==========================================================================
+   Web / Mandala Pattern Styles
+   ========================================================================== */
+.radial-spokes line {
+  stroke: var(--color-web-line);
+  stroke-width: 1.25px;
+  stroke-linecap: round;
+  transition: stroke 0.4s ease;
+}
+
+.spiral-strands path,
+.spiral-strands polygon {
+  fill: none;
+  stroke: var(--color-web-line);
+  stroke-width: 1.15px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  transition: stroke 0.4s ease, filter 0.4s ease;
+}
+
+.mandala-rings circle,
+.mandala-rings path {
+  fill: none;
+  stroke: var(--color-web-faint);
+  stroke-width: 0.9px;
+}
+
+.dew-drops circle {
+  fill: #FFFFFF;
+  opacity: 0.75;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Silk Pluck Reaction Animation */
+.web-plucked .spiral-strands path,
+.web-plucked .spiral-strands polygon,
+.web-plucked .radial-spokes line {
+  animation: webVibrate 0.85s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  stroke: rgba(255, 255, 255, 0.65);
+}
+
+@keyframes webVibrate {
+  0% { transform: scale(1); }
+  15% { transform: scale(1.025); }
+  30% { transform: scale(0.985); }
+  45% { transform: scale(1.015); }
+  60% { transform: scale(0.995); }
+  80% { transform: scale(1.005); }
+  100% { transform: scale(1); }
+}
+
+/* ==========================================================================
+   Dial Numbers (1 through 12) & Ticks
+   ========================================================================== */
+.dial-tick {
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 1px;
+  stroke-linecap: round;
+}
+
+.dial-tick.hour-tick {
+  stroke: rgba(255, 255, 255, 0.75);
+  stroke-width: 2px;
+}
+
+.clock-number {
+  font-family: var(--font-dial);
+  font-size: 34px;
+  font-weight: 400;
+  fill: #FFFFFF;
+  text-anchor: middle;
+  dominant-baseline: central;
+  letter-spacing: -0.02em;
+  transition: fill 0.3s ease, transform 0.3s ease, font-size 0.3s ease;
+  cursor: default;
+  filter: drop-shadow(0 2px 5px rgba(30, 10, 0, 0.4));
+}
+
+.clock-number:hover {
+  fill: #FFFBEB;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9));
+}
+
+.clock-number.active-hour {
+  font-weight: 600;
+  fill: #FFFFFF;
+  filter: drop-shadow(0 0 8px rgba(255, 235, 200, 0.85));
+}
+
+/* ==========================================================================
+   Static Resting Spider Legs (Pairs 2, 3, 4 = 6 legs)
+   With organic idle breathing animation
+   ========================================================================== */
+.resting-leg {
+  fill: none;
+  stroke: var(--color-spider);
+  stroke-width: 3.2px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform-origin: 400px 400px;
+  transform-box: view-box;
+  transition: transform 0.4s ease;
+}
+
+/* Staggered organic breathing movement for resting legs */
+.leg-l2 {
+  animation: legBreathL2 5.2s ease-in-out infinite;
+}
+.leg-l3 {
+  animation: legBreathL3 6.1s ease-in-out infinite 0.7s;
+}
+.leg-l4 {
+  animation: legBreathL4 5.7s ease-in-out infinite 1.4s;
+}
+
+.leg-r2 {
+  animation: legBreathR2 5.2s ease-in-out infinite 0.3s;
+}
+.leg-r3 {
+  animation: legBreathR3 6.1s ease-in-out infinite 1.1s;
+}
+.leg-r4 {
+  animation: legBreathR4 5.7s ease-in-out infinite 1.8s;
+}
+
+@keyframes legBreathL2 {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-1.5deg) translate(-2px, -1px); }
+}
+@keyframes legBreathL3 {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-2deg) translate(-3px, 1px); }
+}
+@keyframes legBreathL4 {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-1.8deg) translate(-2px, 2px); }
+}
+
+@keyframes legBreathR2 {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(1.5deg) translate(2px, -1px); }
+}
+@keyframes legBreathR3 {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(2deg) translate(3px, 1px); }
+}
+@keyframes legBreathR4 {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(1.8deg) translate(2px, 2px); }
+}
+
+/* ==========================================================================
+   Clock Hands: Articulated Spider Front Legs & Luminous Second Hand
+   ========================================================================== */
+.hand-wrapper {
+  transform-origin: 400px 400px;
+  transform-box: view-box;
+  /* Hardware accelerated transform for butter smooth 60/120fps rotation */
+  will-change: transform;
+}
+
+/* Hour Hand (Left Front Leg) */
+.hour-hand .leg-segment {
+  fill: none;
+  stroke: #FFFFFF;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hour-hand .segment-coxa {
+  stroke-width: 4.8px;
+}
+.hour-hand .segment-tibia {
+  stroke-width: 3.6px;
+}
+.hour-hand .segment-claw {
+  stroke-width: 2.5px;
+}
+
+.hour-hand .leg-joint {
+  fill: #FFFFFF;
+  stroke: #CBD5E1;
+  stroke-width: 1px;
+}
+.hour-hand .leg-joint-subtle {
+  fill: #FFFFFF;
+}
+
+.hour-hand .leg-tip-indicator {
+  fill: #FFFFFF;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9));
+}
+
+/* Minute Hand (Right Front Leg - Longer, Slender) */
+.minute-hand .leg-segment {
+  fill: none;
+  stroke: #FFFFFF;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.minute-hand .segment-coxa-long {
+  stroke-width: 4.2px;
+}
+.minute-hand .segment-tibia-long {
+  stroke-width: 3.2px;
+}
+.minute-hand .segment-claw-long {
+  stroke-width: 2.2px;
+}
+
+.minute-hand .leg-joint {
+  fill: #FFFFFF;
+  stroke: #CBD5E1;
+  stroke-width: 1px;
+}
+.minute-hand .leg-joint-subtle {
+  fill: #FFFFFF;
+}
+
+.minute-hand .minute-tip {
+  fill: #FFFFFF;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.9));
+}
+
+/* Second Hand (Ultra-thin Luminous Silk Needle) */
+.second-filament-hand {
+  pointer-events: none;
+}
+
+.second-needle {
+  stroke: #FFFDF8;
+  stroke-width: 1.4px;
+  stroke-linecap: round;
+  box-shadow: 0 0 8px #F97316;
+}
+
+.second-tail {
+  stroke: rgba(255, 245, 235, 0.7);
+  stroke-width: 1.2px;
+  stroke-linecap: round;
+}
+
+.second-tail-pip {
+  fill: #FFEDD5;
+}
+
+.second-droplet {
+  fill: #FFFFFF;
+  stroke: #F97316;
+  stroke-width: 0.8px;
+  filter: drop-shadow(0 0 5px rgba(249, 115, 22, 0.85));
+}
+
+.second-tip-pip {
+  fill: #FFFFFF;
+  filter: drop-shadow(0 0 4px #FFFFFF);
+}
+
+/* ==========================================================================
+   Central Spider Body & Cephalothorax
+   ========================================================================== */
+.spider-body-group {
+  cursor: pointer;
+  transform-origin: 400px 400px;
+  transition: transform 0.25s ease;
+}
+
+.spider-body-group:hover {
+  transform: scale(1.05);
+}
+
+.spider-body-group:active {
+  transform: scale(0.96);
+}
+
+.spider-abdomen {
+  filter: drop-shadow(0 3px 6px rgba(20, 10, 0, 0.45));
+}
+
+.spider-thorax {
+  filter: drop-shadow(0 2px 4px rgba(20, 10, 0, 0.35));
+}
+
+.spider-eye {
+  transition: fill 0.2s ease;
+}
+
+.center-pearl {
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+}
+
+/* ==========================================================================
+   Minimalist Floating HUD Bar & Controls
+   ========================================================================== */
+.hud-bar {
+  position: absolute;
+  bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(30, 15, 2, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 9999px;
+  padding: 8px 18px 8px 22px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  z-index: 10;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.time-readout {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+  font-size: 15px;
+  color: #FFFFFF;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  padding-right: 16px;
+}
+
+.digital-time {
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: #FFFFFF;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.digital-ampm {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.1em;
+}
+
+.hud-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hud-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  color: #FFFFFF;
+  font-family: var(--font-dial);
+  font-size: 13px;
+  font-weight: 400;
+  padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  outline: none;
+}
+
+.hud-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.hud-btn:active {
+  transform: translateY(1px);
+}
+
+.hud-btn.active {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.35);
+}
+
+.hud-icon {
+  display: block;
+}
+
+/* ==========================================================================
+   Responsive Adaptations
+   ========================================================================== */
+@media (max-width: 640px) {
+  :root {
+    --clock-size: 92vmin;
+  }
+
+  .clock-number {
+    font-size: 32px;
+  }
+
+  .hud-bar {
+    bottom: 16px;
+    padding: 6px 14px;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .time-readout {
+    font-size: 13px;
+    padding-right: 10px;
+  }
+
+  .hud-btn {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+}
+
+@media (max-height: 520px) {
+  .hud-bar {
+    bottom: 8px;
+    transform: scale(0.85);
+  }
+}
