@@ -39,6 +39,9 @@
   const clockWrapper = document.getElementById('clockWrapper');
   const spiderBodyGroup = document.getElementById('spiderBodyGroup');
   const ambientCanvas = document.getElementById('ambientCanvas');
+  const butterflyContainer = document.getElementById('butterflyContainer');
+  const butterflyEl = document.getElementById('butterfly');
+  const butterflyTrailCanvas = document.getElementById('butterflyTrailCanvas');
 
   // --- State ---
   let isSmoothSweep = true;
@@ -46,6 +49,25 @@
   let lastSecondInt = -1;
   let audioCtx = null;
   let mousePos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
+  // --- Butterfly Autonomous Simulation State ---
+  const bfState = {
+    x: 0,
+    y: 0,
+    vx: 1.2,
+    vy: -0.8,
+    heading: 45,
+    speed: 2.2,
+    minSpeed: 1.2,
+    maxSpeed: 3.4,
+    time: 0,
+    orbitAngle: Math.random() * Math.PI * 2,
+    startleTimer: 0,
+    glideCycle: 0,
+    isGliding: false,
+    particles: [],
+    maxParticles: 45,
+  };
 
   // ==========================================================================
   // 1. PROCEDURAL CLOCK FACE: NUMERALS 1 TO 12 & SUBTLE DIAL TICKS
@@ -287,6 +309,9 @@
         playWebTick(seconds === 0);
       }
     }
+
+    // Update Butterfly flight path and particles
+    updateButterfly();
 
     // Continue high-precision animation loop
     requestAnimationFrame(updateClock);
@@ -597,6 +622,252 @@
   }
 
   // ==========================================================================
+  // 9. LUMINOUS 3D BUTTERFLY AUTONOMOUS FLIGHT & STEERING DYNAMICS
+  // ==========================================================================
+  function initButterfly() {
+    if (!butterflyContainer || !butterflyEl) return;
+
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const cx = w / 2;
+    const cy = h / 2;
+    const clockRadius = Math.min(w, h) * 0.43;
+
+    // Initialize position in outer catenary web region
+    bfState.x = cx + clockRadius * 0.58;
+    bfState.y = cy - clockRadius * 0.42;
+    bfState.orbitAngle = Math.atan2(bfState.y - cy, bfState.x - cx);
+
+    // Setup stardust trail canvas
+    if (butterflyTrailCanvas) {
+      butterflyTrailCanvas.width = window.innerWidth;
+      butterflyTrailCanvas.height = window.innerHeight;
+      window.addEventListener('resize', () => {
+        butterflyTrailCanvas.width = window.innerWidth;
+        butterflyTrailCanvas.height = window.innerHeight;
+      });
+    }
+
+    // Interactive startle when clicking near butterfly
+    window.addEventListener('click', (e) => {
+      const dist = Math.hypot(e.clientX - bfState.x, e.clientY - bfState.y);
+      if (dist < 120) {
+        // Playful startle dart away from click
+        const awayAngle = Math.atan2(bfState.y - e.clientY, bfState.x - e.clientX);
+        bfState.vx += Math.cos(awayAngle) * 4.2;
+        bfState.vy += Math.sin(awayAngle) * 4.2;
+        bfState.startleTimer = 40;
+        spawnSparkles(bfState.x, bfState.y, 8);
+      }
+    });
+  }
+
+  // Spawn glowing stardust particles behind butterfly
+  function spawnSparkles(x, y, count = 1) {
+    for (let i = 0; i < count; i++) {
+      if (bfState.particles.length >= bfState.maxParticles) {
+        bfState.particles.shift();
+      }
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 0.75 + 0.2;
+      bfState.particles.push({
+        x: x + (Math.random() - 0.5) * 8,
+        y: y + (Math.random() - 0.5) * 8,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed + 0.32, // Gentle downward drift
+        size: Math.random() * 2.2 + 0.8,
+        alpha: 1.0,
+        decay: Math.random() * 0.02 + 0.016,
+        twinkleSpeed: Math.random() * 0.15 + 0.05,
+        twinkle: Math.random() * Math.PI,
+      });
+    }
+  }
+
+  // Render and update stardust trail on canvas
+  function renderButterflyTrail() {
+    if (!butterflyTrailCanvas) return;
+    const ctx = butterflyTrailCanvas.getContext('2d');
+    const w = butterflyTrailCanvas.width;
+    const h = butterflyTrailCanvas.height;
+
+    ctx.clearRect(0, 0, w, h);
+
+    for (let i = bfState.particles.length - 1; i >= 0; i--) {
+      const p = bfState.particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.alpha -= p.decay;
+      p.twinkle += p.twinkleSpeed;
+
+      if (p.alpha <= 0) {
+        bfState.particles.splice(i, 1);
+        continue;
+      }
+
+      const currentAlpha = Math.max(0, p.alpha * (0.7 + 0.3 * Math.sin(p.twinkle)));
+      const currentRadius = p.size * (0.5 + 0.5 * p.alpha);
+
+      // Luminous cyan outer glow
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, currentRadius * 2.2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(0, 240, 255, ${(currentAlpha * 0.35).toFixed(3)})`;
+      ctx.fill();
+
+      // Bright core stardust mote
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, currentRadius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(224, 247, 255, ${(currentAlpha * 0.9).toFixed(3)})`;
+      ctx.fill();
+    }
+  }
+
+  // Update butterfly flight physics, steering forces, and 3D transforms
+  function updateButterfly() {
+    if (!butterflyContainer || !butterflyEl) return;
+
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const cx = w / 2;
+    const cy = h / 2;
+    const clockRadius = Math.min(w, h) * 0.43;
+
+    bfState.time += 0.024;
+
+    let accX = 0;
+    let accY = 0;
+
+    // 1. Casual Orbit along outer catenary web rings (undulating breathing radius)
+    bfState.orbitAngle += 0.0075;
+    const webOuterR = clockRadius * (0.62 + 0.16 * Math.sin(bfState.time * 0.5) + 0.07 * Math.cos(bfState.time * 1.1));
+    const orbitTargetX = cx + webOuterR * Math.cos(bfState.orbitAngle);
+    const orbitTargetY = cy + (webOuterR * 0.92) * Math.sin(bfState.orbitAngle * 1.15);
+
+    let finalTargetX = orbitTargetX;
+    let finalTargetY = orbitTargetY;
+
+    // 2. Loose attraction to user mouse cursor (curious orbiting halo around cursor)
+    if (mousePos) {
+      const mouseDist = Math.hypot(mousePos.x - bfState.x, mousePos.y - bfState.y);
+
+      if (mouseDist < 48) {
+        // Startle response if cursor rushes directly at butterfly
+        const startleAngle = Math.atan2(bfState.y - mousePos.y, bfState.x - mousePos.x);
+        accX += Math.cos(startleAngle) * 3.2;
+        accY += Math.sin(startleAngle) * 3.2;
+        bfState.startleTimer = 30;
+        spawnSparkles(bfState.x, bfState.y, 2);
+      } else if (mouseDist < 420) {
+        // Curious orbiting halo around cursor
+        const haloAngle = bfState.time * 1.4;
+        const haloDist = 110 + 35 * Math.sin(bfState.time * 1.8);
+        const mouseHaloX = mousePos.x + Math.cos(haloAngle) * haloDist;
+        const mouseHaloY = mousePos.y + Math.sin(haloAngle) * haloDist;
+
+        // Smooth blending: stronger when closer to mouse, blending with web orbit
+        const mouseWeight = Math.max(0, 1 - mouseDist / 420) * 0.55;
+        finalTargetX = orbitTargetX * (1 - mouseWeight) + mouseHaloX * mouseWeight;
+        finalTargetY = orbitTargetY * (1 - mouseWeight) + mouseHaloY * mouseWeight;
+      }
+    }
+
+    // 3. Smooth steering acceleration towards final target
+    const toTargetX = finalTargetX - bfState.x;
+    const toTargetY = finalTargetY - bfState.y;
+    const distToTarget = Math.hypot(toTargetX, toTargetY);
+
+    if (distToTarget > 1) {
+      const desiredSpeed = Math.min(bfState.maxSpeed, Math.max(bfState.minSpeed, distToTarget * 0.035));
+      const desiredVx = (toTargetX / distToTarget) * desiredSpeed;
+      const desiredVy = (toTargetY / distToTarget) * desiredSpeed;
+
+      accX += (desiredVx - bfState.vx) * 0.04;
+      accY += (desiredVy - bfState.vy) * 0.04;
+    }
+
+    // 4. Critical Clearance: Soft Repulsion from Spider Center & Clock Hands
+    const distFromCenter = Math.hypot(bfState.x - cx, bfState.y - cy);
+    const spiderSafeRadius = Math.max(130, clockRadius * 0.32);
+
+    if (distFromCenter < spiderSafeRadius) {
+      const pushFactor = ((spiderSafeRadius - distFromCenter) / spiderSafeRadius) * 2.8;
+      const pushAngle = Math.atan2(bfState.y - cy, bfState.x - cx);
+      accX += Math.cos(pushAngle) * pushFactor;
+      accY += Math.sin(pushAngle) * pushFactor;
+    }
+
+    // 5. Boundary avoidance: steer gently away from screen borders
+    const margin = 70;
+    if (bfState.x < margin) accX += (margin - bfState.x) * 0.05;
+    if (bfState.x > w - margin) accX -= (bfState.x - (w - margin)) * 0.05;
+    if (bfState.y < margin) accY += (margin - bfState.y) * 0.05;
+    if (bfState.y > h - margin) accY -= (bfState.y - (h - margin)) * 0.05;
+
+    // 6. Wing-Beat Turbulence & Micro-Bobbing (realistic light biological flight)
+    const headingRad = Math.atan2(bfState.vy, bfState.vx);
+    const perpRad = headingRad + Math.PI / 2;
+    const bobbing = Math.sin(bfState.time * 15) * (bfState.isGliding ? 0.06 : 0.45);
+    accX += Math.cos(perpRad) * bobbing * 0.16;
+    accY += Math.sin(perpRad) * bobbing * 0.16;
+
+    // 7. Velocity Update & Speed Clamping
+    bfState.vx += accX;
+    bfState.vy += accY;
+
+    const currentSpeed = Math.hypot(bfState.vx, bfState.vy);
+    const maxLimit = bfState.startleTimer > 0 ? 5.0 : bfState.maxSpeed;
+
+    if (currentSpeed > maxLimit) {
+      bfState.vx = (bfState.vx / currentSpeed) * maxLimit;
+      bfState.vy = (bfState.vy / currentSpeed) * maxLimit;
+    } else if (currentSpeed < bfState.minSpeed) {
+      bfState.vx = (bfState.vx / currentSpeed) * bfState.minSpeed;
+      bfState.vy = (bfState.vy / currentSpeed) * bfState.minSpeed;
+    }
+
+    bfState.x += bfState.vx;
+    bfState.y += bfState.vy;
+
+    // 8. Orientation: Rotate to face flight direction (with smooth angle interpolation)
+    const targetHeading = Math.atan2(bfState.vy, bfState.vx) * (180 / Math.PI) + 90;
+    let angleDiff = (targetHeading - bfState.heading) % 360;
+    if (angleDiff > 180) angleDiff -= 360;
+    if (angleDiff < -180) angleDiff += 360;
+    bfState.heading += angleDiff * 0.11;
+
+    // Dynamic 3D Bank Angle (rolls into turns)
+    const bankAngle = Math.max(-28, Math.min(28, angleDiff * 1.5));
+
+    // 9. Gliding vs Fluttering State Management
+    if (bfState.startleTimer > 0) {
+      bfState.startleTimer--;
+      bfState.isGliding = false;
+      butterflyContainer.classList.add('fast-flutter');
+      butterflyContainer.classList.remove('gliding');
+    } else {
+      butterflyContainer.classList.remove('fast-flutter');
+      bfState.glideCycle = (bfState.glideCycle + 1) % 360;
+      if (bfState.glideCycle > 280 && Math.abs(angleDiff) < 6) {
+        bfState.isGliding = true;
+        butterflyContainer.classList.add('gliding');
+      } else {
+        bfState.isGliding = false;
+        butterflyContainer.classList.remove('gliding');
+      }
+    }
+
+    // 10. Apply Hardware-Accelerated 3D Transforms
+    butterflyContainer.style.transform = `translate3d(${bfState.x.toFixed(2)}px, ${bfState.y.toFixed(2)}px, 0) rotate(${bfState.heading.toFixed(2)}deg)`;
+    butterflyEl.style.transform = `rotateY(${bankAngle.toFixed(2)}deg)`;
+
+    // 11. Stardust Sparkle Trail Emission
+    if (Math.random() < (bfState.isGliding ? 0.35 : 0.75)) {
+      spawnSparkles(bfState.x, bfState.y, 1);
+    }
+    renderButterflyTrail();
+  }
+
+  // ==========================================================================
   // INITIALIZATION
   // ==========================================================================
   function init() {
@@ -605,6 +876,7 @@
     initControls();
     initMouseInteractions();
     initAmbientParticles();
+    initButterfly();
 
     // Start real-time analog clock loop
     requestAnimationFrame(updateClock);

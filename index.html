@@ -309,6 +309,123 @@
       </svg>
     </div>
 
+    <!-- Butterfly Luminous Stardust Particle Trail Canvas -->
+    <canvas id="butterflyTrailCanvas" class="butterfly-trail-canvas"></canvas>
+
+    <!-- Glowing Ethereal Cyan Butterfly -->
+    <div class="butterfly-container" id="butterflyContainer" aria-label="Glowing Ethereal Butterfly" role="img">
+      <div class="butterfly" id="butterfly">
+        <!-- SVG Definitions for Gradients and Filters -->
+        <svg class="butterfly-defs-svg" width="0" height="0" style="position: absolute;">
+          <defs>
+            <linearGradient id="bfWingGrad" x1="100%" y1="40%" x2="0%" y2="50%">
+              <stop offset="0%" stop-color="#0284c7" stop-opacity="0.95"/>
+              <stop offset="35%" stop-color="#00f0ff" stop-opacity="0.8"/>
+              <stop offset="75%" stop-color="#38bdf8" stop-opacity="0.65"/>
+              <stop offset="100%" stop-color="#e0f2fe" stop-opacity="0.9"/>
+            </linearGradient>
+            <linearGradient id="bfVeinGrad" x1="100%" y1="50%" x2="0%" y2="50%">
+              <stop offset="0%" stop-color="#e0f2fe" stop-opacity="0.85"/>
+              <stop offset="60%" stop-color="#7dd3fc" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#00f0ff" stop-opacity="0.3"/>
+            </linearGradient>
+            <radialGradient id="bfEyeGrad" cx="35%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="60%" stop-color="#38bdf8"/>
+              <stop offset="100%" stop-color="#0284c7"/>
+            </radialGradient>
+            <linearGradient id="bfBodyGrad" x1="50%" y1="0%" x2="50%" y2="100%">
+              <stop offset="0%" stop-color="#0284c7"/>
+              <stop offset="30%" stop-color="#075985"/>
+              <stop offset="70%" stop-color="#032b43"/>
+              <stop offset="100%" stop-color="#021422"/>
+            </linearGradient>
+            <filter id="bfWingGlow" x="-30%" y="-30%" width="160%" height="160%">
+              <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#00f0ff" flood-opacity="0.85"/>
+            </filter>
+          </defs>
+        </svg>
+
+        <!-- Left Wing Assembly (Flaps around right margin / body) -->
+        <div class="butterfly-wing butterfly-wing-left">
+          <svg class="wing-svg" viewBox="0 0 34 48" preserveAspectRatio="none">
+            <!-- Wing Base Surface with Glow and Cyan/Teal Gradient -->
+            <!-- Forewing (upper) -->
+            <path class="wing-surface forewing" d="M 34 22 C 30 11, 24 3, 9 2 C 2 1.5, 0.5 8, 3 18 C 6 27, 16 35, 34 36 Z" fill="url(#bfWingGrad)" stroke="#38bdf8" stroke-width="0.9" filter="url(#bfWingGlow)"/>
+            <!-- Hindwing (lower) -->
+            <path class="wing-surface hindwing" d="M 34 30 C 26 31, 8 36, 6 42 C 4 47, 14 48, 22 47 C 28 46, 32 40, 34 36 Z" fill="url(#bfWingGrad)" stroke="#38bdf8" stroke-width="0.9" filter="url(#bfWingGlow)"/>
+            <!-- Delicate Semi-Transparent Vein Patterns -->
+            <g class="wing-veins" stroke="url(#bfVeinGrad)" stroke-width="0.75" fill="none">
+              <path d="M 34 24 Q 22 14 10 3" />
+              <path d="M 34 24 Q 18 20 4 17" />
+              <path d="M 34 24 Q 19 28 8 28" />
+              <path d="M 34 32 Q 22 38 8 42" />
+              <path d="M 34 32 Q 26 44 20 46" />
+            </g>
+            <!-- Luminous Pearlescent Edge Accent Dots -->
+            <circle cx="9" cy="3.5" r="1" fill="#ffffff" opacity="0.9"/>
+            <circle cx="3" cy="14" r="0.9" fill="#ffffff" opacity="0.85"/>
+            <circle cx="5" cy="24" r="0.8" fill="#ffffff" opacity="0.8"/>
+            <circle cx="8" cy="42" r="0.8" fill="#ffffff" opacity="0.8"/>
+            <circle cx="18" cy="46.5" r="0.8" fill="#ffffff" opacity="0.8"/>
+          </svg>
+        </div>
+
+        <!-- Right Wing Assembly (Mirrored, flaps around left margin / body) -->
+        <div class="butterfly-wing butterfly-wing-right">
+          <svg class="wing-svg" viewBox="0 0 34 48" preserveAspectRatio="none">
+            <!-- Mirrored group using scaleX(-1) -->
+            <g transform="translate(34, 0) scale(-1, 1)">
+              <!-- Forewing (upper) -->
+              <path class="wing-surface forewing" d="M 34 22 C 30 11, 24 3, 9 2 C 2 1.5, 0.5 8, 3 18 C 6 27, 16 35, 34 36 Z" fill="url(#bfWingGrad)" stroke="#38bdf8" stroke-width="0.9" filter="url(#bfWingGlow)"/>
+              <!-- Hindwing (lower) -->
+              <path class="wing-surface hindwing" d="M 34 30 C 26 31, 8 36, 6 42 C 4 47, 14 48, 22 47 C 28 46, 32 40, 34 36 Z" fill="url(#bfWingGrad)" stroke="#38bdf8" stroke-width="0.9" filter="url(#bfWingGlow)"/>
+              <!-- Delicate Semi-Transparent Vein Patterns -->
+              <g class="wing-veins" stroke="url(#bfVeinGrad)" stroke-width="0.75" fill="none">
+                <path d="M 34 24 Q 22 14 10 3" />
+                <path d="M 34 24 Q 18 20 4 17" />
+                <path d="M 34 24 Q 19 28 8 28" />
+                <path d="M 34 32 Q 22 38 8 42" />
+                <path d="M 34 32 Q 26 44 20 46" />
+              </g>
+              <!-- Luminous Pearlescent Edge Accent Dots -->
+              <circle cx="9" cy="3.5" r="1" fill="#ffffff" opacity="0.9"/>
+              <circle cx="3" cy="14" r="0.9" fill="#ffffff" opacity="0.85"/>
+              <circle cx="5" cy="24" r="0.8" fill="#ffffff" opacity="0.8"/>
+              <circle cx="8" cy="42" r="0.8" fill="#ffffff" opacity="0.8"/>
+              <circle cx="18" cy="46.5" r="0.8" fill="#ffffff" opacity="0.8"/>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Butterfly Slender Chitin Body & Antennae -->
+        <div class="butterfly-body">
+          <svg class="body-svg" viewBox="0 0 12 48" preserveAspectRatio="none">
+            <!-- Curved Antennae with Glowing Cyan Orb Tips -->
+            <path d="M 5 12 Q 2 6, 0.5 4" stroke="#7dd3fc" stroke-width="0.7" fill="none"/>
+            <circle cx="0.5" cy="4" r="1" fill="#00f0ff" filter="url(#bfWingGlow)"/>
+            <path d="M 7 12 Q 10 6, 11.5 4" stroke="#7dd3fc" stroke-width="0.7" fill="none"/>
+            <circle cx="11.5" cy="4" r="1" fill="#00f0ff" filter="url(#bfWingGlow)"/>
+            <!-- Head -->
+            <ellipse cx="6" cy="14" rx="2.4" ry="2.2" fill="url(#bfBodyGrad)"/>
+            <!-- Glowing Eyes -->
+            <circle cx="4.8" cy="13.5" r="0.9" fill="url(#bfEyeGrad)"/>
+            <circle cx="7.2" cy="13.5" r="0.9" fill="url(#bfEyeGrad)"/>
+            <!-- Thorax -->
+            <ellipse cx="6" cy="20" rx="2.8" ry="4.5" fill="url(#bfBodyGrad)"/>
+            <!-- Abdomen with Chitin Segmentation -->
+            <ellipse cx="6" cy="31" rx="2.2" ry="7.5" fill="url(#bfBodyGrad)"/>
+            <line x1="4.2" y1="27" x2="7.8" y2="27" stroke="#38bdf8" stroke-width="0.5" opacity="0.7"/>
+            <line x1="4.0" y1="30" x2="8.0" y2="30" stroke="#38bdf8" stroke-width="0.5" opacity="0.7"/>
+            <line x1="4.2" y1="33" x2="7.8" y2="33" stroke="#38bdf8" stroke-width="0.5" opacity="0.7"/>
+            <line x1="4.5" y1="36" x2="7.5" y2="36" stroke="#38bdf8" stroke-width="0.5" opacity="0.7"/>
+            <!-- Dorsal Luminescent Ridge -->
+            <line x1="6" y1="18" x2="6" y2="36" stroke="#00f0ff" stroke-width="0.6" opacity="0.8" filter="url(#bfWingGlow)"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
     <!-- Floating Glassmorphic HUD Pill Bar -->
     <footer class="hud-bar" id="hudBar">
       <!-- Digital Time Readout -->
