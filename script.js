@@ -1,6 +1,7 @@
 /**
- * Spider Clock - Master Animation & Interaction Script
- * Articulated spider analog timepiece with real-time accuracy and smooth animation
+ * SPIDER CLOCK - Master Animation & Interaction Script
+ * Articulated white spider analog timepiece with real-time accuracy,
+ * procedural catenary web, synthesized Web Audio, and 3D mouse parallax.
  */
 
 (function () {
@@ -35,7 +36,7 @@
   const soundLabel = document.getElementById('soundLabel');
   const soundMuteSlash = document.getElementById('soundMuteSlash');
   const webPulseBtn = document.getElementById('webPulseBtn');
-  const clockWrapper = document.querySelector('.clock-wrapper');
+  const clockWrapper = document.getElementById('clockWrapper');
   const spiderBodyGroup = document.getElementById('spiderBodyGroup');
   const ambientCanvas = document.getElementById('ambientCanvas');
 
@@ -47,12 +48,12 @@
   let mousePos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 
   // ==========================================================================
-  // 1. GENERATE CLOCK FACE: NUMERALS 1 TO 12 & SUBTLE TICKS
+  // 1. PROCEDURAL CLOCK FACE: NUMERALS 1 TO 12 & SUBTLE DIAL TICKS
   // ==========================================================================
   function initClockFace() {
-    // 1. Generate 12 Numerals
+    // 1. Procedurally generate 12 numerals (1 to 12)
     for (let i = 1; i <= 12; i++) {
-      // 12 is at -90 deg (top), 1 at -60 deg, etc.
+      // 12 is at top (-90 deg), 1 is at -60 deg, etc.
       const angleDeg = i * 30 - 90;
       const angleRad = (angleDeg * Math.PI) / 180;
 
@@ -68,7 +69,7 @@
       numbersGroup.appendChild(text);
     }
 
-    // 2. Generate 60 Minute/Second Subtle Dial Ticks
+    // 2. Procedurally generate 60 minute & hour dial ticks
     for (let i = 0; i < 60; i++) {
       const angleDeg = i * 6 - 90;
       const angleRad = (angleDeg * Math.PI) / 180;
@@ -93,19 +94,19 @@
   }
 
   // ==========================================================================
-  // 2. GENERATE DELICATE INTRICATE WEB & MANDALA PATTERN
+  // 2. PROCEDURAL WEB & MANDALA ROSETTE PATTERN
   // ==========================================================================
   function initWebPattern() {
     const spokes = WEB_SPOKES_COUNT;
     const spokeAngles = [];
 
-    // Radial spokes matching the 12 clock hour directions
+    // 1. Procedurally generate 12 radial spokes aligning exactly with the hour marks
     for (let i = 0; i < spokes; i++) {
       const angleDeg = i * (360 / spokes) - 90;
       const angleRad = (angleDeg * Math.PI) / 180;
       spokeAngles.push(angleRad);
 
-      const rStart = 28; // clears spider body
+      const rStart = 28; // Clears the spider body
       const rEnd = WEB_MAX_RADIUS;
 
       const x1 = CLOCK_CENTER + rStart * Math.cos(angleRad);
@@ -121,13 +122,12 @@
       radialSpokesGroup.appendChild(line);
     }
 
-    // Concentric Web Rings & Catenary Sagging Arcs (Realistic Spider Web)
+    // 2. Procedurally generate 6 concentric, sagging catenary web rings with dew drops
     const ringRadii = [48, 80, 118, 160, 205, 248];
 
     ringRadii.forEach((r, ringIdx) => {
-      // Create a smooth polygon/catenary path connecting all 12 spokes
       let pathData = '';
-      const sagFactor = 0.94 - ringIdx * 0.012; // Natural silk tension sag between spokes
+      const sagFactor = 0.94 - ringIdx * 0.012; // Natural silk tension sag towards center
 
       for (let s = 0; s < spokes; s++) {
         const nextS = (s + 1) % spokes;
@@ -139,7 +139,7 @@
         const x2 = CLOCK_CENTER + r * Math.cos(a2);
         const y2 = CLOCK_CENTER + r * Math.sin(a2);
 
-        // Control point for the sagged silk thread arc
+        // Control point for the sagged catenary silk curve
         const midAngle = (a1 + a2) / 2 + (a2 < a1 ? Math.PI : 0);
         const rSag = r * sagFactor;
         const cx = CLOCK_CENTER + rSag * Math.cos(midAngle);
@@ -150,13 +150,24 @@
         }
         pathData += `Q ${cx.toFixed(2)} ${cy.toFixed(2)} ${x2.toFixed(2)} ${y2.toFixed(2)} `;
 
-        // Tiny dew drop pearls at spoke intersections
-        if (ringIdx % 2 === 0 || s % 2 === 0) {
-          const drop = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          drop.setAttribute('cx', x1.toFixed(2));
-          drop.setAttribute('cy', y1.toFixed(2));
-          drop.setAttribute('r', (1.4 + Math.random() * 0.9).toFixed(1));
-          dewDropsGroup.appendChild(drop);
+        // Morning dew drop accents at spoke-ring intersections
+        const drop = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        drop.setAttribute('cx', x1.toFixed(2));
+        drop.setAttribute('cy', y1.toFixed(2));
+        const dropR = 1.6 + (ringIdx * 0.22) + (s % 3 === 0 ? 0.6 : 0);
+        drop.setAttribute('r', dropR.toFixed(2));
+        drop.setAttribute('fill', 'url(#dewDropGrad)');
+        drop.setAttribute('filter', 'url(#glowSubtle)');
+        dewDropsGroup.appendChild(drop);
+
+        // Secondary small dew drops along the catenary arc on outer rings
+        if (ringIdx >= 2 && s % 2 === 0) {
+          const midDrop = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          midDrop.setAttribute('cx', cx.toFixed(2));
+          midDrop.setAttribute('cy', cy.toFixed(2));
+          midDrop.setAttribute('r', '1.2');
+          midDrop.setAttribute('fill', 'url(#dewDropGrad)');
+          dewDropsGroup.appendChild(midDrop);
         }
       }
 
@@ -165,26 +176,51 @@
       spiralStrandsGroup.appendChild(webPath);
     });
 
-    // Subtle Mandala Accent: Concentric Rosette Petals in the center
-    const mandalaRadius = 90;
+    // 3. Central Mandala Rosette Petals behind the spider
+    const rosetteGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    rosetteGroup.setAttribute('class', 'mandala-rosette');
+
+    // Sacred rosette petals intersecting around center
     for (let p = 0; p < 12; p++) {
-      const a = (p * 30 * Math.PI) / 180;
-      const petalDist = 58;
-      const px = CLOCK_CENTER + petalDist * Math.cos(a);
-      const py = CLOCK_CENTER + petalDist * Math.sin(a);
+      const angle = (p * 30 * Math.PI) / 180;
+      const rPetal = 68;
+      const px = CLOCK_CENTER + rPetal * Math.cos(angle);
+      const py = CLOCK_CENTER + rPetal * Math.sin(angle);
 
       const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       circle.setAttribute('cx', px.toFixed(2));
       circle.setAttribute('cy', py.toFixed(2));
-      circle.setAttribute('r', '22');
-      circle.setAttribute('stroke', 'rgba(255, 255, 255, 0.08)');
-      circle.setAttribute('fill', 'none');
-      mandalaRingsGroup.appendChild(circle);
+      circle.setAttribute('r', '38');
+      circle.setAttribute('stroke', 'rgba(255, 255, 255, 0.12)');
+      circle.setAttribute('fill', 'rgba(255, 255, 255, 0.015)');
+      rosetteGroup.appendChild(circle);
     }
+
+    // Delicate rosette petal curves radiating from center
+    for (let p = 0; p < 12; p++) {
+      const a = (p * 30 * Math.PI) / 180;
+      const petalLen = 82;
+      const xEnd = CLOCK_CENTER + petalLen * Math.cos(a);
+      const yEnd = CLOCK_CENTER + petalLen * Math.sin(a);
+      const cxMid = CLOCK_CENTER + (petalLen * 0.55) * Math.cos(a + 0.26);
+      const cyMid = CLOCK_CENTER + (petalLen * 0.55) * Math.sin(a + 0.26);
+
+      const petalPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      petalPath.setAttribute(
+        'd',
+        `M ${CLOCK_CENTER} ${CLOCK_CENTER} Q ${cxMid.toFixed(2)} ${cyMid.toFixed(2)} ${xEnd.toFixed(2)} ${yEnd.toFixed(2)}`
+      );
+      petalPath.setAttribute('stroke', 'rgba(255, 255, 255, 0.18)');
+      petalPath.setAttribute('stroke-width', '1.1');
+      petalPath.setAttribute('fill', 'none');
+      rosetteGroup.appendChild(petalPath);
+    }
+
+    mandalaRingsGroup.appendChild(rosetteGroup);
   }
 
   // ==========================================================================
-  // 3. TIME CALCULATION & SMOOTH HAND ROTATION
+  // 3. CONTINUOUS ANALOG TIME UPDATE & SMOOTH HAND SWEEP
   // ==========================================================================
   function updateClock() {
     const now = new Date();
@@ -192,39 +228,38 @@
     const hours = now.getHours();
     const minutes = now.getMinutes();
     const seconds = now.getSeconds();
-    const milliseconds = now.getMilliseconds();
+    const ms = now.getMilliseconds();
 
     // Calculate rotation angles
     let secondDeg;
     if (isSmoothSweep) {
-      // Continuous buttery smooth sweep (60/120fps)
-      secondDeg = (seconds + milliseconds / 1000) * 6;
+      // Continuous buttery-smooth analog sweep with millisecond precision
+      secondDeg = (seconds + ms / 1000) * 6;
     } else {
-      // Stepped quartz tick
+      // Stepped discrete quartz tick
       secondDeg = seconds * 6;
     }
 
-    // Minute Hand (smooth continuous advance as seconds tick)
-    const minuteDeg = (minutes + (seconds + milliseconds / 1000) / 60) * 6;
+    // Minute Hand (smooth advance as seconds tick)
+    const minuteDeg = (minutes + (seconds + ms / 1000) / 60) * 6;
 
-    // Hour Hand (smooth continuous advance as minutes tick: 360 deg / 12 hrs = 30 deg/hr)
+    // Hour Hand (smooth advance as minutes tick: 360 deg / 12 hrs = 30 deg/hr)
     const hourDeg = ((hours % 12) + (minutes + seconds / 60) / 60) * 30;
 
-    // Apply rotation transforms directly using hardware-accelerated CSS transforms and SVG attributes
     const hDeg = hourDeg.toFixed(3);
     const mDeg = minuteDeg.toFixed(3);
     const sDeg = secondDeg.toFixed(3);
 
+    // Apply hardware-accelerated CSS transform and SVG presentation attribute for 100% precision
     hourHandWrapper.style.transform = `rotate(${hDeg}deg)`;
     minuteHandWrapper.style.transform = `rotate(${mDeg}deg)`;
     secondHandWrapper.style.transform = `rotate(${sDeg}deg)`;
 
-    // SVG standard attribute fallback (rotates around center 400, 400)
     hourHandWrapper.setAttribute('transform', `rotate(${hDeg} 400 400)`);
     minuteHandWrapper.setAttribute('transform', `rotate(${mDeg} 400 400)`);
     secondHandWrapper.setAttribute('transform', `rotate(${sDeg} 400 400)`);
 
-    // Highlight current active hour numeral
+    // Highlight active current hour numeral
     const currentHour12 = hours % 12 || 12;
     document.querySelectorAll('.clock-number').forEach((el) => {
       if (parseInt(el.getAttribute('data-hour'), 10) === currentHour12) {
@@ -245,7 +280,7 @@
       digitalAmPmEl.textContent = ampm;
     }
 
-    // Trigger Subtle Audio Tick / Web Chime if second changed
+    // Trigger Synthesized Web Audio Silk Tick on Second Change
     if (seconds !== lastSecondInt) {
       lastSecondInt = seconds;
       if (isAudioEnabled) {
@@ -253,60 +288,124 @@
       }
     }
 
-    // Continue animation loop
+    // Continue high-precision animation loop
     requestAnimationFrame(updateClock);
   }
 
   // ==========================================================================
-  // 4. WEB AUDIO SYNTHESIZED TICK / SILK PLUCK
+  // 4. SYNTHESIZED WEB AUDIO (CRUCIAL: NO EXTERNAL AUDIO FILES)
   // ==========================================================================
-  function playWebTick(isMinuteChime = false) {
+  function getAudioContext() {
     if (!audioCtx) {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) return;
-      audioCtx = new AudioContext();
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return null;
+      audioCtx = new AudioContextClass();
     }
-
     if (audioCtx.state === 'suspended') {
       audioCtx.resume();
     }
+    return audioCtx;
+  }
 
-    const t = audioCtx.currentTime;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    const filter = audioCtx.createBiquadFilter();
+  // Delicate silk tick pulse matching the seconds
+  function playWebTick(isMinuteChime = false) {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    const t = ctx.currentTime;
 
     if (isMinuteChime) {
-      // Soft crystalline silk harmonic for top of minute
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(880, t);
-      osc.frequency.exponentialRampToValueAtTime(1320, t + 0.15);
+      // Crystalline silk bell chime on the minute
+      const freqs = [1046.5, 1318.5, 1567.98]; // C6, E6, G6
+      freqs.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
 
-      gain.gain.setValueAtTime(0.08, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, t + idx * 0.04);
 
-      filter.type = 'bandpass';
-      filter.frequency.value = 1100;
-      filter.Q.value = 4.0;
+        gain.gain.setValueAtTime(0.045, t + idx * 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + idx * 0.04 + 0.7);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(t + idx * 0.04);
+        osc.stop(t + idx * 0.04 + 0.75);
+      });
     } else {
-      // Delicate arachnid silk tick
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(1400, t);
-      osc.frequency.exponentialRampToValueAtTime(400, t + 0.04);
+      // Delicate gossamer arachnid silk tick pulse
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
 
-      gain.gain.setValueAtTime(0.035, t);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+      osc.type = 'sine';
+      // Rapid pitch drop mimicking silk filament snapping lightly under tension
+      osc.frequency.setValueAtTime(2400, t);
+      osc.frequency.exponentialRampToValueAtTime(650, t + 0.024);
+
+      gain.gain.setValueAtTime(0.038, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.035);
 
       filter.type = 'highpass';
-      filter.frequency.value = 800;
+      filter.frequency.setValueAtTime(1200, t);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.04);
     }
+  }
 
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(audioCtx.destination);
+  // Multi-harmonic harp pluck chord triggered when user interacts with web or clicks 'Pluck Web'
+  function playSilkHarpChord() {
+    const ctx = getAudioContext();
+    if (!ctx) return;
 
-    osc.start(t);
-    osc.stop(t + (isMinuteChime ? 0.45 : 0.06));
+    // Ethereal silk pentatonic harp chord (F#4, A4, C#5, E5, F#5)
+    const chordNotes = [369.99, 440.00, 554.37, 659.25, 739.99];
+    const now = ctx.currentTime;
+
+    chordNotes.forEach((freq, idx) => {
+      const noteTime = now + idx * 0.036; // Gentle harp arpeggio stagger
+
+      // Fundamental string oscillator
+      const osc = ctx.createOscillator();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, noteTime);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.995, noteTime + 1.2);
+
+      // Shimmering overtone
+      const overtone = ctx.createOscillator();
+      overtone.type = 'sine';
+      overtone.frequency.setValueAtTime(freq * 2, noteTime);
+
+      // Acoustic silk resonance filter
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(3400, noteTime);
+      filter.frequency.exponentialRampToValueAtTime(750, noteTime + 0.85);
+      filter.Q.setValueAtTime(3.8, noteTime);
+
+      // Envelope with sharp acoustic pluck transient and resonant decay
+      const gain = ctx.createGain();
+      const noteAmp = 0.068 / (1 + idx * 0.22);
+      gain.gain.setValueAtTime(0.0001, noteTime);
+      gain.gain.linearRampToValueAtTime(noteAmp, noteTime + 0.005);
+      gain.gain.exponentialRampToValueAtTime(0.0001, noteTime + 1.35);
+
+      osc.connect(filter);
+      overtone.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(noteTime);
+      overtone.start(noteTime);
+      osc.stop(noteTime + 1.4);
+      overtone.stop(noteTime + 1.4);
+    });
   }
 
   // ==========================================================================
@@ -317,7 +416,7 @@
     if (!webGroup) return;
 
     webGroup.classList.remove('web-plucked');
-    // Force reflow
+    // Force DOM reflow to restart CSS animation
     void webGroup.offsetWidth;
     webGroup.classList.add('web-plucked');
 
@@ -328,36 +427,6 @@
     setTimeout(() => {
       webGroup.classList.remove('web-plucked');
     }, 900);
-  }
-
-  function playSilkHarpChord() {
-    if (!audioCtx) {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) return;
-      audioCtx = new AudioContext();
-    }
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-
-    // Pluck 3 harmonic silk frequencies: pentatonic ethereal shimmer
-    const notes = [440, 660, 880, 1100];
-    notes.forEach((freq, idx) => {
-      const t = audioCtx.currentTime + idx * 0.04;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, t);
-      osc.frequency.exponentialRampToValueAtTime(freq * 0.98, t + 0.6);
-
-      gain.gain.setValueAtTime(0.05 / (idx + 1), t);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.6);
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-
-      osc.start(t);
-      osc.stop(t + 0.65);
-    });
   }
 
   // ==========================================================================
@@ -375,15 +444,15 @@
     });
 
     const particles = [];
-    const PARTICLE_COUNT = 32;
+    const PARTICLE_COUNT = 36;
 
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
         r: Math.random() * 1.8 + 0.6,
-        vx: (Math.random() - 0.5) * 0.25,
-        vy: -Math.random() * 0.35 - 0.1,
+        vx: (Math.random() - 0.5) * 0.22,
+        vy: -Math.random() * 0.32 - 0.1,
         alpha: Math.random() * 0.5 + 0.2,
         pulseSpeed: Math.random() * 0.02 + 0.01,
         pulseVal: Math.random() * Math.PI,
@@ -420,7 +489,7 @@
   }
 
   // ==========================================================================
-  // 7. MOUSE PARALLAX & SPIDER AWARENESS
+  // 7. INTERACTIVE 3D PARALLAX & SPIDER PUPIL TRACKING
   // ==========================================================================
   function initMouseInteractions() {
     window.addEventListener('mousemove', (e) => {
@@ -429,25 +498,44 @@
 
       const centerX = window.innerWidth / 2;
       const centerY = window.innerHeight / 2;
-      const dx = (e.clientX - centerX) / centerX;
-      const dy = (e.clientY - centerY) / centerY;
+      const dx = (e.clientX - centerX) / centerX; // -1 to 1
+      const dy = (e.clientY - centerY) / centerY; // -1 to 1
 
-      // Subtle parallax tilt for the clock
+      // Subtle 3D perspective tilt on clock wrapper
       if (clockWrapper) {
-        clockWrapper.style.transform = `perspective(1000px) rotateX(${(-dy * 2).toFixed(2)}deg) rotateY(${(dx * 2).toFixed(2)}deg)`;
+        const tiltX = (-dy * 4.2).toFixed(2);
+        const tiltY = (dx * 4.2).toFixed(2);
+        clockWrapper.style.transform = `perspective(1200px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
       }
 
-      // Spider eye pupil reflection shift
-      const pupils = document.querySelectorAll('.eye-reflection');
-      pupils.forEach((pupil) => {
-        pupil.setAttribute('transform', `translate(${(dx * 0.7).toFixed(2)}, ${(dy * 0.7).toFixed(2)})`);
+      // Dynamic Spider Pupil Tracking: follows mouse cursor across the screen
+      const pupils = document.querySelectorAll('.spider-pupil');
+      const highlights = document.querySelectorAll('.spider-pupil-highlight');
+      const secondaryPupils = document.querySelectorAll('.secondary-pupil');
+
+      const pupilShiftX = (dx * 1.5).toFixed(2);
+      const pupilShiftY = (dy * 1.5).toFixed(2);
+
+      pupils.forEach((p) => {
+        p.setAttribute('transform', `translate(${pupilShiftX}, ${pupilShiftY})`);
+      });
+
+      highlights.forEach((h) => {
+        h.setAttribute('transform', `translate(${(dx * 0.9).toFixed(2)}, ${(dy * 0.9).toFixed(2)})`);
+      });
+
+      secondaryPupils.forEach((sp) => {
+        sp.setAttribute('transform', `translate(${(dx * 0.75).toFixed(2)}, ${(dy * 0.75).toFixed(2)})`);
       });
     });
 
     window.addEventListener('mouseleave', () => {
       if (clockWrapper) {
-        clockWrapper.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+        clockWrapper.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg)';
       }
+      document.querySelectorAll('.spider-pupil, .spider-pupil-highlight, .secondary-pupil').forEach((el) => {
+        el.setAttribute('transform', 'translate(0, 0)');
+      });
     });
 
     // Clicking the spider or clock stage plucks the web
@@ -467,38 +555,42 @@
   }
 
   // ==========================================================================
-  // 8. HUD CONTROLS & LISTENERS
+  // 8. FLOATING HUD CONTROLS & LISTENERS
   // ==========================================================================
   function initControls() {
-    // 1. Toggle Smooth / Stepped Sweep
+    // 1. Smooth vs. Stepped Sweep Toggle
     if (sweepToggleBtn) {
       sweepToggleBtn.addEventListener('click', () => {
         isSmoothSweep = !isSmoothSweep;
         sweepModeLabel.textContent = isSmoothSweep ? 'Smooth' : 'Stepped';
         sweepToggleBtn.classList.toggle('active', isSmoothSweep);
       });
-      sweepToggleBtn.classList.add('active'); // smooth by default
+      sweepToggleBtn.classList.add('active'); // Smooth sweep active by default
     }
 
-    // 2. Toggle Sound
+    // 2. Ambient Web Audio Silk Tick / Chime Toggle
     if (soundToggleBtn) {
       soundToggleBtn.addEventListener('click', () => {
         isAudioEnabled = !isAudioEnabled;
         soundLabel.textContent = isAudioEnabled ? 'Sound On' : 'Sound Off';
         soundToggleBtn.classList.toggle('active', isAudioEnabled);
+
         if (soundMuteSlash) {
           soundMuteSlash.style.display = isAudioEnabled ? 'none' : 'block';
         }
+
         if (isAudioEnabled) {
-          playWebTick(true);
+          getAudioContext();
+          playWebTick(true); // Play pleasant confirmation bell
         }
       });
     }
 
-    // 3. Pluck Web Button
+    // 3. Interactive 'Pluck Web' Button
     if (webPulseBtn) {
       webPulseBtn.addEventListener('click', (e) => {
         e.stopPropagation();
+        getAudioContext();
         pluckWeb();
       });
     }
@@ -514,7 +606,7 @@
     initMouseInteractions();
     initAmbientParticles();
 
-    // Start real-time clock loop
+    // Start real-time analog clock loop
     requestAnimationFrame(updateClock);
   }
 

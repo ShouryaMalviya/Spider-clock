@@ -4,28 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Spider Clock | Animated Analog Timepiece</title>
-  <meta name="description" content="A visually striking animated analog clock featuring a suspended spider whose legs act as the hour and minute hands, with a continuous sweeping second hand and an intricate web face.">
+  <meta name="description" content="An advanced, interactive, animated Spider Clock featuring an articulated white spider whose front legs act as hour and minute hands, with procedural catenary web, synthesized Web Audio, and 3D parallax.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;1,400&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Ambient Atmospheric Vignette & Particles -->
+  <!-- Ambient Atmospheric Radial Vignette & Silk Mote Particles -->
   <div class="ambient-glow" id="ambientGlow"></div>
   <canvas id="ambientCanvas" class="ambient-canvas"></canvas>
 
-  <!-- Hanging Silk Thread from Top Center of Screen to Clock Center -->
-  <div class="silk-thread-container">
+  <!-- Hanging Silk Thread from Top Center of Screen (y = 0) to Center (400, 400) -->
+  <div class="silk-thread-container" aria-hidden="true">
     <div class="silk-thread" id="silkThread">
       <div class="silk-shimmer"></div>
     </div>
   </div>
 
-  <!-- Main Clock Container -->
-  <main class="clock-stage" id="clockStage" role="region" aria-label="Spider Analog Clock">
+  <!-- Main Clock Stage -->
+  <main class="clock-stage" id="clockStage" role="main" aria-label="Spider Analog Clock">
     
-    <div class="clock-wrapper">
+    <div class="clock-wrapper" id="clockWrapper">
       <svg id="spiderClockSvg" class="clock-svg" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <!-- Radial Web Shading & Filters -->
@@ -36,18 +36,32 @@
             <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
           </radialGradient>
 
+          <!-- Dew Drop Luminous Pearl Gradient -->
+          <radialGradient id="dewDropGrad" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1"/>
+            <stop offset="35%" stop-color="#FFF7ED" stop-opacity="0.95"/>
+            <stop offset="75%" stop-color="#FED7AA" stop-opacity="0.85"/>
+            <stop offset="100%" stop-color="#F97316" stop-opacity="0.5"/>
+          </radialGradient>
+
           <!-- Spider Pearl Gradient -->
           <linearGradient id="spiderWhiteGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#FFFFFF"/>
-            <stop offset="45%" stop-color="#F1F5F9"/>
+            <stop offset="45%" stop-color="#F8FAFC"/>
             <stop offset="80%" stop-color="#E2E8F0"/>
             <stop offset="100%" stop-color="#CBD5E1"/>
+          </linearGradient>
+
+          <!-- Spider Carapace Highlight Gradient -->
+          <linearGradient id="spiderHighlightGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#CBD5E1" stop-opacity="0.2"/>
           </linearGradient>
 
           <!-- Golden/Ivory Accent Gradient -->
           <linearGradient id="spiderAccentGrad" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stop-color="#FFFFFF"/>
-            <stop offset="100%" stop-color="#F8FAFC"/>
+            <stop offset="100%" stop-color="#F1F5F9"/>
           </linearGradient>
 
           <!-- Luminous Second Hand Gradient -->
@@ -57,22 +71,25 @@
             <stop offset="100%" stop-color="#F97316" stop-opacity="0.8"/>
           </linearGradient>
 
-          <!-- Shadow Filters -->
+          <!-- Shadow & Glow Filters -->
           <filter id="spiderShadow" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#1c0f02" flood-opacity="0.55"/>
+            <feDropShadow dx="0" dy="7" stdDeviation="5.5" flood-color="#1c0f02" flood-opacity="0.55"/>
           </filter>
 
           <filter id="handShadow" x="-40%" y="-40%" width="180%" height="180%">
             <feDropShadow dx="1" dy="4" stdDeviation="4" flood-color="#241203" flood-opacity="0.45"/>
           </filter>
 
-          <filter id="glowSubtle" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="2.5" result="blur"/>
-            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          <filter id="glowSubtle" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feMerge>
+              <feMergeNode in="blur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
           </filter>
 
           <filter id="secondGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feGaussianBlur stdDeviation="2.5" result="blur"/>
             <feMerge>
               <feMergeNode in="blur"/>
               <feMergeNode in="SourceGraphic"/>
@@ -80,72 +97,115 @@
           </filter>
         </defs>
 
-        <!-- Center of Clock is (400, 400) -->
-
-        <!-- LAYER 1: Subtle Intricate Mandala / Lace Web Pattern -->
+        <!-- LAYER 1: Procedural Web & Mandala Pattern (Center is 400, 400) -->
         <g id="webGroup" class="web-group">
-          <!-- Dynamic web lines & intricate mandala generated and enhanced by script -->
+          <!-- Central Sacred Mandala Rosette Petals behind the spider -->
           <g id="mandalaRings" class="mandala-rings"></g>
+          <!-- 12 Radial Spokes aligning exactly with hour marks -->
           <g id="radialSpokes" class="radial-spokes"></g>
+          <!-- 6 Concentric Sagging Catenary Web Rings -->
           <g id="spiralStrands" class="spiral-strands"></g>
+          <!-- Morning Dew Drop Accents -->
           <g id="dewDrops" class="dew-drops"></g>
         </g>
 
         <!-- LAYER 2: Minute Ticks & Hour Pips -->
         <g id="dialTicks" class="dial-ticks"></g>
 
-        <!-- LAYER 3: Clock Face Numbers 1 to 12 -->
+        <!-- LAYER 3: Clock Face Numbers 1 to 12 (Modern sans-serif typography with drop shadows) -->
         <g id="numbersGroup" class="numbers-group" role="presentation"></g>
 
-        <!-- LAYER 4: Static Resting Spider Legs (Pairs 2, 3, 4 = 6 Legs) -->
-        <!-- These wrap around the spider body, resting on web strands with subtle idle breathing -->
-        <g id="spiderRestingLegs" class="spider-resting-legs" filter="url(#spiderShadow)">
-          <!-- Left side 3 legs -->
-          <!-- Leg L2 -->
-          <path id="legL2" class="resting-leg leg-l2" d="M 390 395 C 360 380, 315 365, 290 330 C 275 310, 260 280, 245 250" />
-          <!-- Leg L3 -->
-          <path id="legL3" class="resting-leg leg-l3" d="M 388 402 C 345 398, 295 405, 265 425 C 240 442, 220 470, 205 500" />
-          <!-- Leg L4 (Rear left) -->
-          <path id="legL4" class="resting-leg leg-l4" d="M 391 412 C 355 428, 310 460, 290 500 C 278 525, 270 560, 265 595" />
-
-          <!-- Right side 3 legs -->
-          <!-- Leg R2 -->
-          <path id="legR2" class="resting-leg leg-r2" d="M 410 395 C 440 380, 485 365, 510 330 C 525 310, 540 280, 555 250" />
-          <!-- Leg R3 -->
-          <path id="legR3" class="resting-leg leg-r3" d="M 412 402 C 455 398, 505 405, 535 425 C 560 442, 580 470, 595 500" />
-          <!-- Leg R4 (Rear right) -->
-          <path id="legR4" class="resting-leg leg-r4" d="M 409 412 C 445 428, 490 460, 510 500 C 522 525, 530 560, 535 595" />
+        <!-- Unbroken Illuminated SVG Silk Line extending from screen top (y = 0) down to center (400, 400) -->
+        <g id="svgSilkGroup" class="svg-silk-group">
+          <line class="svg-silk-glow" x1="400" y1="-800" x2="400" y2="400" stroke="rgba(255, 245, 235, 0.45)" stroke-width="3" filter="url(#glowSubtle)" />
+          <line class="svg-silk-core" x1="400" y1="-800" x2="400" y2="400" stroke="#FFFFFF" stroke-width="1.6" />
+          <!-- Animated traveling shimmer packet sliding down the silk line into the spider center -->
+          <line class="svg-silk-pulse" x1="400" y1="-800" x2="400" y2="400" stroke="#FFFFFF" stroke-width="2.8" stroke-dasharray="45 380" stroke-linecap="round">
+            <animate attributeName="stroke-dashoffset" from="425" to="0" dur="3s" repeatCount="indefinite" />
+          </line>
         </g>
 
-        <!-- LAYER 5: Dynamic Clock Hands (Front Spider Legs 1L & 1R, and Second Filament) -->
+        <!-- LAYER 4: Static Resting Spider Legs (Pairs 2, 3, 4 = 6 Legs) -->
+        <!-- Articulated legs spanning gracefully to touch the outer web strands with staggered idle breathing -->
+        <g id="spiderRestingLegs" class="spider-resting-legs" filter="url(#spiderShadow)">
+          
+          <!-- LEFT SIDE 3 LEGS -->
+          <!-- Leg L2: Front-mid left spanning to upper outer strand -->
+          <g id="legGroupL2" class="resting-leg-group leg-l2">
+            <path class="resting-leg-stroke" d="M 390 395 Q 355 372 318 350 Q 285 330 258 290 Q 248 275 242 250" />
+            <circle class="resting-leg-joint" cx="318" cy="350" r="3.2" />
+            <circle class="resting-leg-joint" cx="258" cy="290" r="2.5" />
+            <polygon class="resting-leg-claw" points="240,248 245,250 242,254" />
+          </g>
+
+          <!-- Leg L3: Middle left spanning to side outer strand -->
+          <g id="legGroupL3" class="resting-leg-group leg-l3">
+            <path class="resting-leg-stroke" d="M 388 404 Q 345 398 298 408 Q 256 422 225 458 Q 212 478 202 505" />
+            <circle class="resting-leg-joint" cx="298" cy="408" r="3.2" />
+            <circle class="resting-leg-joint" cx="225" cy="458" r="2.5" />
+            <polygon class="resting-leg-claw" points="200,503 205,505 203,509" />
+          </g>
+
+          <!-- Leg L4: Rear left spanning to lower outer strand -->
+          <g id="legGroupL4" class="resting-leg-group leg-l4">
+            <path class="resting-leg-stroke" d="M 391 415 Q 352 432 308 472 Q 284 508 272 550 Q 266 572 262 596" />
+            <circle class="resting-leg-joint" cx="308" cy="472" r="3.2" />
+            <circle class="resting-leg-joint" cx="272" cy="550" r="2.5" />
+            <polygon class="resting-leg-claw" points="260,594 265,596 262,600" />
+          </g>
+
+          <!-- RIGHT SIDE 3 LEGS -->
+          <!-- Leg R2: Front-mid right spanning to upper outer strand -->
+          <g id="legGroupR2" class="resting-leg-group leg-r2">
+            <path class="resting-leg-stroke" d="M 410 395 Q 445 372 482 350 Q 515 330 542 290 Q 552 275 558 250" />
+            <circle class="resting-leg-joint" cx="482" cy="350" r="3.2" />
+            <circle class="resting-leg-joint" cx="542" cy="290" r="2.5" />
+            <polygon class="resting-leg-claw" points="560,248 555,250 558,254" />
+          </g>
+
+          <!-- Leg R3: Middle right spanning to side outer strand -->
+          <g id="legGroupR3" class="resting-leg-group leg-r3">
+            <path class="resting-leg-stroke" d="M 412 404 Q 455 398 502 408 Q 544 422 575 458 Q 588 478 598 505" />
+            <circle class="resting-leg-joint" cx="502" cy="408" r="3.2" />
+            <circle class="resting-leg-joint" cx="575" cy="458" r="2.5" />
+            <polygon class="resting-leg-claw" points="600,503 595,505 597,509" />
+          </g>
+
+          <!-- Leg R4: Rear right spanning to lower outer strand -->
+          <g id="legGroupR4" class="resting-leg-group leg-r4">
+            <path class="resting-leg-stroke" d="M 409 415 Q 448 432 492 472 Q 516 508 528 550 Q 534 572 538 596" />
+            <circle class="resting-leg-joint" cx="492" cy="472" r="3.2" />
+            <circle class="resting-leg-joint" cx="528" cy="550" r="2.5" />
+            <polygon class="resting-leg-claw" points="540,594 535,596 538,600" />
+          </g>
+        </g>
+
+        <!-- LAYER 5: Dynamic Clock Hands (Integrated Spider Front Legs & Luminous Second Filament) -->
         <g id="clockHandsGroup" class="clock-hands-group">
           
-          <!-- HOUR HAND: Left Front Spider Leg (Integrated Leg 1L) -->
-          <!-- HOUR HAND: Left Front Spider Leg (Integrated Leg 1L) -->
-          <!-- Rotates around (400, 400) -->
+          <!-- HOUR HAND: Front-Left Spider Leg, fully articulated with realistic joints -->
+          <!-- Coxa, femur, patella, tibia, and pointer claw, rotating around (400, 400) -->
           <g id="hourHandWrapper" class="hand-wrapper" filter="url(#handShadow)">
             <g id="hourHand" class="spider-leg-hand hour-hand">
-              <!-- Articulated Spider Leg Shape for Hour Hand (length ~185px) -->
               <!-- Coxa & Femur Segment -->
               <path class="leg-segment segment-coxa" d="M 398 400 Q 394 365, 392 342 Q 391 328, 388 312" />
               <!-- Patella / Knee Joint -->
               <circle class="leg-joint" cx="388" cy="312" r="4.2" />
               <!-- Tibia & Metatarsus -->
               <path class="leg-segment segment-tibia" d="M 388 312 Q 393 285, 397 260 Q 399 245, 399 232" />
-              <!-- Joint Accent Pip -->
+              <!-- Articulated Joint Pip -->
               <circle class="leg-joint-subtle" cx="399" cy="232" r="2.8" />
-              <!-- Tarsus / Pointer Claw -->
-              <path class="leg-segment segment-claw" d="M 399 232 L 400 220" />
-              <polygon class="leg-tip-indicator" points="398,222 402,222 400,215" />
+              <!-- Tarsus / Pointer Claw pointing accurately to the hour -->
+              <path class="leg-segment segment-claw" d="M 399 232 L 400 216" />
+              <polygon class="leg-tip-indicator" points="397.5,218 402.5,218 400,212" />
             </g>
           </g>
 
-          <!-- MINUTE HAND: Right Front Spider Leg (Integrated Leg 1R) -->
-          <!-- Rotates around (400, 400) -->
+          <!-- MINUTE HAND: Front-Right Spider Leg, longer and sleeker -->
+          <!-- Articulated joints pointing precisely to the minute marks -->
           <g id="minuteHandWrapper" class="hand-wrapper" filter="url(#handShadow)">
             <g id="minuteHand" class="spider-leg-hand minute-hand">
-              <!-- Longer, Sleeker Articulated Spider Leg Shape for Minute Hand (length ~255px) -->
-              <!-- Coxa & Femur Segment -->
+              <!-- Coxa & Femur Segment (longer) -->
               <path class="leg-segment segment-coxa-long" d="M 402 400 Q 406 355, 410 320 Q 412 290, 412 265" />
               <!-- Patella / Knee Joint -->
               <circle class="leg-joint" cx="412" cy="265" r="3.8" />
@@ -153,97 +213,124 @@
               <path class="leg-segment segment-tibia-long" d="M 412 265 Q 408 225, 404 195 Q 402 175, 401 155" />
               <!-- Joint Pip -->
               <circle class="leg-joint-subtle" cx="401" cy="155" r="2.4" />
-              <!-- Tarsus / Needle Claw extending outward to the clock numerals -->
-              <path class="leg-segment segment-claw-long" d="M 401 155 L 400 150" />
-              <polygon class="leg-tip-indicator minute-tip" points="398.5,152 401.5,152 400,145" />
+              <!-- Tarsus / Sleek Needle Claw extending out to the minutes -->
+              <path class="leg-segment segment-claw-long" d="M 401 155 L 400 148" />
+              <polygon class="leg-tip-indicator minute-tip" points="398,150 402,150 400,142" />
             </g>
           </g>
 
-          <!-- SECOND HAND: Ultra-thin Luminous Silk Needle Hand (length ~270px) -->
-          <!-- Rotates around (400, 400) smoothly -->
+          <!-- SECOND HAND: Ultra-thin Luminous Silk Filament with glowing droplet marker -->
+          <!-- Rotates continuously around (400, 400) -->
           <g id="secondHandWrapper" class="hand-wrapper" filter="url(#secondGlow)">
             <g id="secondHand" class="second-filament-hand">
               <!-- Counterbalance tail extending down -->
               <line class="second-tail" x1="400" y1="400" x2="400" y2="445" />
               <circle class="second-tail-pip" cx="400" cy="445" r="2.2" />
-              <!-- Main slender luminous needle hand reaching past the minutes -->
-              <line class="second-needle" x1="400" y1="400" x2="400" y2="130" />
-              <!-- Silk droplet marker near the tip -->
-              <circle class="second-droplet" cx="400" cy="148" r="3" />
+              <!-- Ultra-thin luminous needle reaching past minute marks -->
+              <line class="second-needle" x1="400" y1="400" x2="400" y2="128" />
+              <!-- Glowing morning-dew silk droplet marker near the tip -->
+              <circle class="second-droplet" cx="400" cy="148" r="3.2" />
+              <circle class="second-droplet-glow" cx="400" cy="148" r="1.5" fill="#FFFFFF" />
               <!-- Glowing needle tip -->
-              <circle class="second-tip-pip" cx="400" cy="130" r="1.8" />
+              <circle class="second-tip-pip" cx="400" cy="128" r="1.8" />
             </g>
           </g>
 
         </g>
 
-        <!-- Dedicated SVG Silk Anchor Line from top of SVG (y=0) to spider (y=372) -->
-        <line class="svg-silk-thread" x1="400" y1="0" x2="400" y2="372" stroke="#FFFFFF" stroke-width="1.6" stroke-opacity="0.9" />
-
-        <!-- LAYER 6: Central Spider Body & Cephalothorax -->
-        <!-- Placed at the exact center (400, 400), casting an organic presence -->
+        <!-- LAYER 6: Beautifully Crafted White Spider Body resting exactly at center (400, 400) -->
         <g id="spiderBodyGroup" class="spider-body-group" filter="url(#spiderShadow)">
           
-          <!-- Silk Spinneret Anchor Point at Abdomen Top -->
-          <path class="spinneret-anchor" d="M 398 372 L 402 372 L 400 370 Z" fill="#ffffff" />
+          <!-- Silk Spinneret Anchor Point at Top of Spider Body (connected to silk thread) -->
+          <path class="spinneret-anchor" d="M 397 372 L 403 372 L 400 368 Z" fill="#FFFFFF" />
 
-          <!-- Spider Abdomen (Upper / Posterior bulb) -->
-          <ellipse class="spider-abdomen" cx="400" cy="418" rx="14" ry="20" fill="url(#spiderWhiteGrad)" />
+          <!-- Spider Abdomen (Posterior bulb) with organic shape -->
+          <ellipse class="spider-abdomen" cx="400" cy="420" rx="15" ry="21" fill="url(#spiderWhiteGrad)" />
           
-          <!-- Abdomen Carapace Pattern (Delicate subtle markings) -->
-          <path class="abdomen-carapace" d="M 400 404 Q 403 416 400 428 Q 397 416 400 404" fill="none" stroke="rgba(163, 78, 1, 0.4)" stroke-width="1.2" />
-          <line x1="395" y1="412" x2="405" y2="412" stroke="rgba(163, 78, 1, 0.3)" stroke-width="1" />
-          <line x1="394" y1="420" x2="406" y2="420" stroke="rgba(163, 78, 1, 0.3)" stroke-width="1" />
-          <line x1="396" y1="428" x2="404" y2="428" stroke="rgba(163, 78, 1, 0.3)" stroke-width="1" />
+          <!-- Abdomen Carapace Pattern (Delicate golden-amber lace markings) -->
+          <path class="abdomen-carapace" d="M 400 404 Q 403 416 400 430 Q 397 416 400 404" fill="none" stroke="rgba(163, 78, 1, 0.45)" stroke-width="1.2" />
+          <line x1="394" y1="414" x2="406" y2="414" stroke="rgba(163, 78, 1, 0.35)" stroke-width="1" />
+          <line x1="393" y1="422" x2="407" y2="422" stroke="rgba(163, 78, 1, 0.35)" stroke-width="1" />
+          <line x1="395" y1="430" x2="405" y2="430" stroke="rgba(163, 78, 1, 0.35)" stroke-width="1" />
+          
+          <!-- Carapace dorsal sheen -->
+          <ellipse cx="398" cy="416" rx="6" ry="12" fill="url(#spiderHighlightGrad)" />
 
           <!-- Pedicel (connection waist) -->
-          <rect x="398" y="399" width="4" height="4" rx="2" fill="#E2E8F0" />
+          <rect x="398" y="399" width="4" height="4.5" rx="2" fill="#E2E8F0" />
 
           <!-- Spider Cephalothorax (Head & Thorax) -->
-          <ellipse class="spider-thorax" cx="400" cy="392" rx="12" ry="11" fill="url(#spiderWhiteGrad)" />
+          <ellipse class="spider-thorax" cx="400" cy="392" rx="12.5" ry="11.5" fill="url(#spiderWhiteGrad)" />
           
           <!-- Chelicerae / Fangs & Pedipalps (Front mouthparts) -->
-          <path class="spider-pedipalp-l" d="M 395 382 Q 393 376 391 374" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round" fill="none" />
-          <path class="spider-pedipalp-r" d="M 405 382 Q 407 376 409 374" stroke="#CBD5E1" stroke-width="1.8" stroke-linecap="round" fill="none" />
-          
-          <!-- Spider Eyes (8 Arachnid Eyes) -->
-          <!-- Primary central eyes -->
-          <circle class="spider-eye primary-eye" cx="398" cy="385" r="1.5" fill="#451a03" />
-          <circle class="spider-eye primary-eye" cx="402" cy="385" r="1.5" fill="#451a03" />
-          <circle class="eye-reflection" cx="397.6" cy="384.6" r="0.5" fill="#FFFFFF" />
-          <circle class="eye-reflection" cx="401.6" cy="384.6" r="0.5" fill="#FFFFFF" />
-          <!-- Lateral secondary eyes -->
-          <circle class="spider-eye" cx="395" cy="386.5" r="1" fill="#451a03" />
-          <circle class="spider-eye" cx="405" cy="386.5" r="1" fill="#451a03" />
-          <circle class="spider-eye" cx="394" cy="388.5" r="0.9" fill="#451a03" />
-          <circle class="spider-eye" cx="406" cy="388.5" r="0.9" fill="#451a03" />
+          <path class="spider-pedipalp-l" d="M 394 382 Q 392 375 390 372" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round" fill="none" />
+          <path class="spider-pedipalp-r" d="M 406 382 Q 408 375 410 372" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round" fill="none" />
+          <polygon class="spider-fang-l" points="397,377 395,373 397,374" fill="#6d2806" />
+          <polygon class="spider-fang-r" points="403,377 405,373 403,374" fill="#6d2806" />
 
-          <!-- Center Pivot Pearl (Cap covering hand axle) -->
-          <circle class="center-pearl" cx="400" cy="400" r="4.5" fill="url(#spiderAccentGrad)" stroke="#CBD5E1" stroke-width="1" />
-          <circle class="center-pearl-glow" cx="400" cy="400" r="2" fill="#FFFFFF" />
+          <!-- Spider Eyes (8 Arachnid Eyes with dynamic cursor pupil tracking) -->
+          <g id="spiderEyesCluster" class="spider-eyes-cluster">
+            <!-- Eye sockets / dark chitin ring -->
+            <ellipse cx="396.5" cy="385" rx="3.5" ry="3.5" fill="#2a1205" stroke="#451a03" stroke-width="0.8" />
+            <ellipse cx="403.5" cy="385" rx="3.5" ry="3.5" fill="#2a1205" stroke="#451a03" stroke-width="0.8" />
+            
+            <!-- Primary Central Eyes (Anterior Median Eyes) -->
+            <circle cx="396.5" cy="385" r="3" fill="#180a02" />
+            <circle cx="403.5" cy="385" r="3" fill="#180a02" />
+            
+            <!-- Glowing Amber/Ruby Irises -->
+            <circle cx="396.5" cy="385" r="2.4" fill="#6d2806" />
+            <circle cx="403.5" cy="385" r="2.4" fill="#6d2806" />
+
+            <!-- Dynamic Tracking Pupils (Follow mouse cursor across the screen) -->
+            <g id="spiderPupils">
+              <circle class="spider-pupil" cx="396.5" cy="385" r="1.5" fill="#000000" />
+              <circle class="spider-pupil" cx="403.5" cy="385" r="1.5" fill="#000000" />
+              <!-- Glossy Corneal Specular Highlights -->
+              <circle class="spider-pupil-highlight" cx="395.8" cy="384.2" r="0.75" fill="#FFFFFF" />
+              <circle class="spider-pupil-highlight" cx="402.8" cy="384.2" r="0.75" fill="#FFFFFF" />
+            </g>
+
+            <!-- Secondary Lateral & Posterior Eyes -->
+            <circle cx="392" cy="387" r="1.6" fill="#2a1205" stroke="#6d2806" stroke-width="0.5" />
+            <circle cx="408" cy="387" r="1.6" fill="#2a1205" stroke="#6d2806" stroke-width="0.5" />
+            <circle class="secondary-pupil" cx="392" cy="387" r="0.9" fill="#000000" />
+            <circle class="secondary-pupil" cx="408" cy="387" r="0.9" fill="#000000" />
+
+            <circle cx="390.5" cy="390" r="1.2" fill="#2a1205" />
+            <circle cx="409.5" cy="390" r="1.2" fill="#2a1205" />
+          </g>
+
+          <!-- Center Pivot Pearl (Jewel cap covering hand rotation axis at 400, 400) -->
+          <circle class="center-pearl" cx="400" cy="400" r="4.8" fill="url(#spiderAccentGrad)" stroke="#CBD5E1" stroke-width="1.2" />
+          <circle class="center-pearl-glow" cx="398.8" cy="398.8" r="1.8" fill="#FFFFFF" />
         </g>
 
       </svg>
     </div>
 
-    <!-- Minimalist Glass Floating Control Bar & Time Indicator -->
+    <!-- Floating Glassmorphic HUD Pill Bar -->
     <footer class="hud-bar" id="hudBar">
+      <!-- Digital Time Readout -->
       <div class="time-readout" id="digitalTimeBadge" title="Local Time">
         <span class="digital-time" id="digitalTime">12:00:00</span>
         <span class="digital-ampm" id="digitalAmPm">PM</span>
       </div>
 
+      <!-- Controls -->
       <div class="hud-controls">
-        <button type="button" class="hud-btn" id="sweepToggleBtn" title="Toggle Smooth / Stepped Second Hand" aria-label="Toggle second hand sweep mode">
-          <svg class="hud-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+        <!-- Smooth vs Stepped Sweep Toggle -->
+        <button type="button" class="hud-btn" id="sweepToggleBtn" title="Toggle Smooth vs. Stepped Second Hand Sweep" aria-label="Toggle second hand sweep mode">
+          <svg class="hud-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="9"/>
             <polyline points="12 7 12 12 15 15"/>
           </svg>
           <span id="sweepModeLabel">Smooth</span>
         </button>
 
-        <button type="button" class="hud-btn" id="soundToggleBtn" title="Toggle Ambient Silk Tick / Web Chime" aria-label="Toggle ambient web chime sound">
-          <svg class="hud-icon" id="soundIcon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+        <!-- Ambient Web Audio Silk Tick / Chime Toggle -->
+        <button type="button" class="hud-btn" id="soundToggleBtn" title="Toggle Ambient Synthesized Silk Tick and Chimes" aria-label="Toggle ambient sound">
+          <svg class="hud-icon" id="soundIcon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
             <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
             <line id="soundMuteSlash" x1="1" y1="1" x2="23" y2="23" stroke="#F87171" stroke-width="2.5" />
@@ -251,8 +338,9 @@
           <span id="soundLabel">Sound Off</span>
         </button>
 
-        <button type="button" class="hud-btn" id="webPulseBtn" title="Touch Web Strands (Pluck Silk)" aria-label="Interact with web strands">
-          <svg class="hud-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+        <!-- Interactive Pluck Web Button -->
+        <button type="button" class="hud-btn" id="webPulseBtn" title="Pluck Web Strands (Multi-harmonic Harp Chime)" aria-label="Pluck web strands">
+          <svg class="hud-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07l14.14-14.14"/>
           </svg>
           <span>Pluck Web</span>
