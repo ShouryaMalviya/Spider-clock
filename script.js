@@ -478,7 +478,7 @@
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 235, 205, ${dynamicAlpha.toFixed(3)})`;
+        ctx.fillStyle = `rgba(224, 242, 254, ${dynamicAlpha.toFixed(3)})`;
         ctx.fill();
       });
 
