@@ -426,6 +426,157 @@
       </div>
     </div>
 
+    <!-- Animated Camouflage Chameleon & Stylized Perch Branch -->
+    <div class="chameleon-container" id="chameleonContainer" aria-label="Animated Camouflage Chameleon on Branch" role="img">
+      <svg id="chameleonSvg" class="chameleon-svg" viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- Chameleon Camouflage Iridescent Gradients -->
+          <linearGradient id="chamGrad" x1="0%" y1="0%" x2="100%" y2="80%">
+            <stop offset="0%" stop-color="#10b981"/>
+            <stop offset="35%" stop-color="#059669"/>
+            <stop offset="70%" stop-color="#0284c7"/>
+            <stop offset="100%" stop-color="#0f766e"/>
+          </linearGradient>
+
+          <linearGradient id="chamBellyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#6ee7b7" stop-opacity="0.9"/>
+            <stop offset="60%" stop-color="#34d399" stop-opacity="0.85"/>
+            <stop offset="100%" stop-color="#059669" stop-opacity="0.7"/>
+          </linearGradient>
+
+          <radialGradient id="chamTurretGrad" cx="38%" cy="38%" r="62%">
+            <stop offset="0%" stop-color="#34d399"/>
+            <stop offset="45%" stop-color="#059669"/>
+            <stop offset="85%" stop-color="#064e3b"/>
+            <stop offset="100%" stop-color="#022c22"/>
+          </radialGradient>
+
+          <linearGradient id="chamBranchGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#102538"/>
+            <stop offset="45%" stop-color="#0c1d2c"/>
+            <stop offset="100%" stop-color="#06111a"/>
+          </linearGradient>
+
+          <filter id="chamGlow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#10b981" flood-opacity="0.45"/>
+          </filter>
+
+          <filter id="tongueGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#f43f5e" flood-opacity="0.8"/>
+          </filter>
+        </defs>
+
+        <!-- Stylized Corner Perch Branch -->
+        <g id="chamBranchGroup" class="cham-branch-group">
+          <!-- Main trunk arching from bottom left into the scene -->
+          <path class="branch-trunk" d="M -20 260 C 25 240, 70 216, 120 194 C 165 174, 215 158, 265 148 C 290 143, 315 140, 340 140 C 340 155, 310 162, 275 173 C 220 193, 165 220, 105 250 C 55 272, 15 285, -20 285 Z" fill="url(#chamBranchGrad)" stroke="#1e3e58" stroke-width="1.2"/>
+          <!-- Branch top illumination highlight -->
+          <path d="M -15 258 C 30 238, 75 214, 122 192 C 167 172, 216 156, 265 146 C 290 141, 315 139, 338 139" fill="none" stroke="rgba(125, 211, 252, 0.28)" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- Bark texture grain -->
+          <path d="M 15 255 Q 85 225 180 180 Q 230 160 290 150" stroke="rgba(125, 211, 252, 0.12)" stroke-width="1.5" fill="none"/>
+          <path d="M 45 250 Q 120 215 210 175 Q 250 160 300 152" stroke="rgba(125, 211, 252, 0.08)" stroke-width="1" fill="none"/>
+          <!-- Twig offshoot -->
+          <path d="M 175 175 Q 198 190, 222 215 Q 196 200, 168 182 Z" fill="url(#chamBranchGrad)" stroke="#1a364d" stroke-width="0.8"/>
+          <!-- Bioluminescent Moss and Spore Nodes -->
+          <circle cx="138" cy="186" r="2.2" fill="#38bdf8" opacity="0.85" filter="url(#glowSubtle)"/>
+          <circle cx="142" cy="189" r="1.4" fill="#34d399" opacity="0.9"/>
+          <circle cx="218" cy="158" r="2.5" fill="#38bdf8" opacity="0.85" filter="url(#glowSubtle)"/>
+          <circle cx="272" cy="146" r="2" fill="#34d399" opacity="0.75"/>
+          <circle cx="298" cy="143" r="2.2" fill="#00f0ff" opacity="0.8" filter="url(#glowSubtle)"/>
+          <!-- Ethereal curled tendril frond -->
+          <path class="biolum-tendril" d="M 222 215 Q 236 228 246 224 Q 252 218 246 211 Q 240 207 236 213" stroke="#34d399" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+        </g>
+
+        <!-- Chameleon Creature Assembly (Receives Camouflage Color Shifts & Micro-Animations) -->
+        <g id="chameleonCreature" class="chameleon-creature">
+          <!-- Hind Leg & Gripping Claws (Anchored to Branch) -->
+          <g class="cham-hind-limb">
+            <path class="cham-thigh" d="M 82 182 Q 72 195 86 208 Q 102 214 108 198 Z" fill="url(#chamGrad)"/>
+            <path class="cham-hind-foot" d="M 96 202 C 102 200, 112 201, 110 208 C 108 213, 100 213, 96 210 C 92 212, 86 210, 88 204 Z" fill="url(#chamGrad)" stroke="#059669" stroke-width="0.7"/>
+            <polygon points="111,206 114,208 112,211" fill="#e2e8f0"/>
+            <polygon points="87,205 84,207 86,210" fill="#e2e8f0"/>
+          </g>
+
+          <!-- Prehensile Spiral Curled Tail (With Idle Micro-Twitch) -->
+          <g id="chameleonTailGroup" class="cham-tail-group">
+            <path class="cham-tail" d="M 76 178 C 58 192, 42 212, 44 230 C 46 244, 58 252, 72 248 C 82 244, 88 232, 82 222 C 75 213, 62 217, 60 226 C 59 233, 66 237, 72 234" fill="none" stroke="url(#chamGrad)" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Tail decorative ridge stripes -->
+            <path d="M 58 198 Q 63 203 66 199" stroke="rgba(110, 231, 183, 0.45)" stroke-width="1.2" fill="none"/>
+            <path d="M 47 218 Q 53 222 56 217" stroke="rgba(110, 231, 183, 0.45)" stroke-width="1.2" fill="none"/>
+            <path d="M 52 241 Q 58 244 62 239" stroke="rgba(110, 231, 183, 0.45)" stroke-width="1.2" fill="none"/>
+          </g>
+
+          <!-- Torso & Flank Assembly (Gentle Breathing Scaling) -->
+          <g id="chameleonTorsoGroup" class="cham-torso-group">
+            <!-- Main Arched Body Mass -->
+            <path class="cham-body" d="M 76 178 C 82 152, 108 122, 142 122 C 164 122, 184 130, 198 146 C 205 158, 196 176, 174 186 C 148 196, 112 196, 82 182 Z" fill="url(#chamGrad)"/>
+            <!-- Lighter Belly Flank Contour -->
+            <path class="cham-belly" d="M 92 181 C 118 192, 148 192, 168 183 C 182 174, 188 163, 184 154 C 168 168, 138 178, 102 176 Z" fill="url(#chamBellyGrad)"/>
+            <!-- Serrated Dorsal Spine Scales (Back Crest) -->
+            <path class="cham-crest" d="M 82 170 L 88 165 L 94 168 L 102 159 L 108 163 L 116 151 L 123 156 L 132 142 L 140 147 L 150 135 L 157 140 L 167 130 L 174 135 L 183 128" stroke="#34d399" stroke-width="1.8" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+            <!-- Flank Decorative Scales / Spots -->
+            <circle cx="120" cy="154" r="2.4" fill="rgba(110, 231, 183, 0.5)"/>
+            <circle cx="132" cy="148" r="1.8" fill="rgba(110, 231, 183, 0.45)"/>
+            <circle cx="145" cy="158" r="2.8" fill="rgba(110, 231, 183, 0.5)"/>
+            <circle cx="160" cy="150" r="2.2" fill="rgba(110, 231, 183, 0.45)"/>
+          </g>
+
+          <!-- Forelimb & Clasping Front Foot -->
+          <g class="cham-fore-limb">
+            <path class="cham-forelimb" d="M 184 152 Q 198 163, 194 173 Q 190 180, 180 176 Q 174 170, 180 158 Z" fill="url(#chamGrad)"/>
+            <path class="cham-fore-foot" d="M 180 174 C 186 172, 194 174, 192 181 C 188 185, 178 184, 176 178 Z" fill="url(#chamGrad)" stroke="#059669" stroke-width="0.7"/>
+            <polygon points="193,179 196,181 194,184" fill="#e2e8f0"/>
+            <polygon points="175,178 172,180 174,183" fill="#e2e8f0"/>
+          </g>
+
+          <!-- Head, Casque Helmet Crest, and Jaws -->
+          <g class="cham-head-assembly">
+            <path class="cham-casque" d="M 170 130 C 158 112, 156 92, 166 82 C 174 74, 186 79, 200 93 C 218 99, 234 107, 245 115 C 247 117, 245 121, 239 123 C 227 127, 213 132, 198 146 Z" fill="url(#chamGrad)"/>
+            <!-- Casque Ridge Rim -->
+            <path class="cham-casque-rim" d="M 166 82 C 174 74, 186 79, 200 93 C 216 99, 232 107, 244 115" stroke="#6ee7b7" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+            <!-- Snout & Mouth Line -->
+            <path id="chamMouthLine" class="cham-mouth" d="M 245 115 C 237 119, 225 122, 214 127" stroke="#064e3b" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+            <!-- Gular Throat Dewlap Pouch -->
+            <path class="cham-throat" d="M 214 127 C 209 135, 203 141, 197 145 C 202 139, 209 133, 214 127 Z" fill="url(#chamBellyGrad)"/>
+          </g>
+
+          <!-- Secondary Far Eye (Distal Turret peeking over snout/casque) -->
+          <g id="chamEyeSecondary" class="cham-eye-secondary">
+            <ellipse cx="216" cy="91" rx="6.5" ry="5.5" fill="#047857" stroke="#064e3b" stroke-width="0.9"/>
+            <circle cx="216" cy="91" r="4.2" fill="#10b981"/>
+            <g id="chamPupilSecondaryGroup">
+              <circle id="chamPupilSecondary" cx="216" cy="91" r="2.2" fill="#022c22"/>
+              <circle cx="215.2" cy="90.2" r="0.8" fill="#ffffff"/>
+            </g>
+          </g>
+
+          <!-- Primary Tracking Eye (Prominent Conical Turret with Dynamic Tracking) -->
+          <g id="chamEyePrimary" class="cham-eye-primary">
+            <!-- Conical Turret Base with Concentric Skin Folds -->
+            <circle cx="202" cy="109" r="13.5" fill="url(#chamTurretGrad)" stroke="#047857" stroke-width="1.2"/>
+            <circle cx="202" cy="109" r="10.5" fill="none" stroke="rgba(5, 150, 105, 0.45)" stroke-width="1"/>
+            <circle cx="202" cy="109" r="7.8" fill="none" stroke="rgba(5, 150, 105, 0.6)" stroke-width="0.8"/>
+            <!-- Iris Aperture -->
+            <circle cx="202" cy="109" r="6" fill="#059669"/>
+            <circle cx="202" cy="109" r="4.8" fill="#34d399"/>
+            <!-- Mobile Pupil Group (Dynamically follows cursor and butterfly) -->
+            <g id="chamPupilPrimaryGroup">
+              <circle id="chamPupilPrimary" cx="202" cy="109" r="3" fill="#022c22"/>
+              <circle id="chamPupilPrimaryHighlight" cx="200.8" cy="107.8" r="1.2" fill="#ffffff"/>
+            </g>
+          </g>
+
+          <!-- Dynamic Chameleon Tongue (Snaps out with elastic trajectory) -->
+          <g id="chamTongueGroup" class="cham-tongue-group" style="opacity: 0; pointer-events: none;">
+            <path id="chamTonguePath" d="M 244 117 L 244 117" stroke="#f43f5e" stroke-width="2.8" stroke-linecap="round" fill="none" filter="url(#tongueGlow)"/>
+            <circle id="chamTongueTip" cx="244" cy="117" r="4" fill="#fb7185" stroke="#f43f5e" stroke-width="1" filter="url(#tongueGlow)"/>
+            <circle id="chamTongueTipPad" cx="244" cy="117" r="1.8" fill="#fff1f2"/>
+          </g>
+
+        </g>
+      </svg>
+    </div>
+
     <!-- Floating Glassmorphic HUD Pill Bar -->
     <footer class="hud-bar" id="hudBar">
       <!-- Digital Time Readout -->

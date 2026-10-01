@@ -778,3 +778,159 @@ body {
   display: block;
   overflow: visible;
 }
+
+/* ==========================================================================
+   12. Animated Camouflage Chameleon & Stylized Perch Branch
+   ========================================================================== */
+
+/* Main Chameleon Stage Container in Bottom-Left Corner */
+.chameleon-container {
+  position: absolute;
+  bottom: 12px;
+  left: 14px;
+  width: min(340px, 30vw);
+  height: auto;
+  aspect-ratio: 320 / 260;
+  z-index: 7;
+  pointer-events: auto;
+  cursor: pointer;
+  filter: drop-shadow(0 14px 28px rgba(2, 12, 24, 0.7));
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.chameleon-container:hover {
+  transform: scale(1.025);
+}
+
+.chameleon-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible; /* Allows tongue to flick across the viewport */
+}
+
+/* Branch Stylized Shading & Depth */
+.branch-trunk {
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+}
+
+.biolum-tendril {
+  filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.7));
+}
+
+/* Camouflage Dynamic Color-Changing Feature (Continuous Smooth Hue Cycling) */
+.chameleon-creature {
+  animation: chameleonCamouflage 24s ease-in-out infinite alternate;
+  will-change: filter;
+  transform-origin: 140px 155px;
+  transition: filter 0.4s ease;
+}
+
+@keyframes chameleonCamouflage {
+  0% {
+    filter: hue-rotate(0deg) drop-shadow(0 0 10px rgba(16, 185, 129, 0.35));
+  }
+  25% {
+    filter: hue-rotate(50deg) drop-shadow(0 0 12px rgba(6, 182, 212, 0.45)); /* Turquoise/Cyan matching butterfly */
+  }
+  50% {
+    filter: hue-rotate(115deg) drop-shadow(0 0 10px rgba(99, 102, 241, 0.4)); /* Royal Violet/Deep Indigo */
+  }
+  75% {
+    filter: hue-rotate(210deg) drop-shadow(0 0 12px rgba(245, 158, 11, 0.45)); /* Golden Amber */
+  }
+  100% {
+    filter: hue-rotate(360deg) drop-shadow(0 0 10px rgba(16, 185, 129, 0.35));
+  }
+}
+
+/* Color ripple flash on direct user click */
+.chameleon-container.color-ripple .chameleon-creature {
+  filter: hue-rotate(180deg) brightness(1.25) drop-shadow(0 0 18px rgba(0, 240, 255, 0.85));
+}
+
+/* Idle Breathing Micro-Animation (Gentle organic expansion of torso/flank) */
+.cham-torso-group {
+  transform-origin: 140px 155px;
+  animation: chamBreathe 4.2s ease-in-out infinite;
+}
+
+@keyframes chamBreathe {
+  0%, 100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.025, 1.018);
+  }
+}
+
+/* Spiral Prehensile Tail Idle Micro-Twitch Animation */
+.cham-tail-group {
+  transform-origin: 76px 178px;
+  animation: chamTailTwitch 8.5s ease-in-out infinite;
+}
+
+@keyframes chamTailTwitch {
+  0%, 82%, 100% {
+    transform: rotate(0deg);
+  }
+  86% {
+    transform: rotate(3.8deg) scale(0.98);
+  }
+  92% {
+    transform: rotate(-2deg);
+  }
+}
+
+/* Gular Throat Dewlap Soft Pulsing */
+.cham-throat {
+  animation: chamThroatPulse 2.8s ease-in-out infinite alternate;
+  transform-origin: 214px 127px;
+}
+
+@keyframes chamThroatPulse {
+  0% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+/* Dynamic Independent Turret Eye & Pupil Styling */
+.cham-eye-primary,
+.cham-eye-secondary {
+  transform-origin: center;
+}
+
+#chamPupilPrimaryGroup,
+#chamPupilSecondaryGroup {
+  will-change: transform;
+  transition: transform 0.05s linear;
+}
+
+/* Dynamic Tongue Stroke Glow */
+.cham-tongue-group {
+  transition: opacity 0.15s ease;
+}
+
+/* Responsive Scaling for Chameleon */
+@media (max-width: 640px) {
+  .chameleon-container {
+    bottom: 58px;
+    left: 4px;
+    width: min(190px, 36vw);
+    opacity: 0.92;
+  }
+}
+
+@media (max-height: 540px) {
+  .chameleon-container {
+    bottom: 4px;
+    left: 4px;
+    width: min(170px, 25vw);
+  }
+}
+

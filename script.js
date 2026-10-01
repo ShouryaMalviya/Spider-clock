@@ -42,6 +42,16 @@
   const butterflyContainer = document.getElementById('butterflyContainer');
   const butterflyEl = document.getElementById('butterfly');
   const butterflyTrailCanvas = document.getElementById('butterflyTrailCanvas');
+  const chameleonContainer = document.getElementById('chameleonContainer');
+  const chameleonSvg = document.getElementById('chameleonSvg');
+  const chamEyePrimary = document.getElementById('chamEyePrimary');
+  const chamEyeSecondary = document.getElementById('chamEyeSecondary');
+  const chamPupilPrimaryGroup = document.getElementById('chamPupilPrimaryGroup');
+  const chamPupilSecondaryGroup = document.getElementById('chamPupilSecondaryGroup');
+  const chamTongueGroup = document.getElementById('chamTongueGroup');
+  const chamTonguePath = document.getElementById('chamTonguePath');
+  const chamTongueTip = document.getElementById('chamTongueTip');
+  const chamTongueTipPad = document.getElementById('chamTongueTipPad');
 
   // --- State ---
   let isSmoothSweep = true;
@@ -49,6 +59,19 @@
   let lastSecondInt = -1;
   let audioCtx = null;
   let mousePos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
+  // --- Chameleon Autonomous Simulation State ---
+  const chamState = {
+    primaryPupil: { x: 0, y: 0 },
+    secondaryPupil: { x: 0, y: 0 },
+    saccadeTimer: 0,
+    saccadeOffset: { x: 0, y: 0 },
+    isTongueFlicking: false,
+    tongueProgress: 0,
+    tonguePhase: 'idle',
+    tongueTargetLocal: { x: 244, y: 117 },
+    autoFlickCountdown: 700 + Math.floor(Math.random() * 600),
+  };
 
   // --- Butterfly Autonomous Simulation State ---
   const bfState = {
@@ -313,6 +336,9 @@
     // Update Butterfly flight path and particles
     updateButterfly();
 
+    // Update Chameleon independent eye tracking, tongue flick, and camouflage
+    updateChameleon();
+
     // Continue high-precision animation loop
     requestAnimationFrame(updateClock);
   }
@@ -382,6 +408,35 @@
       osc.start(t);
       osc.stop(t + 0.04);
     }
+  }
+
+  // Crisp synthesized biological chameleon tongue flick whip-snap
+  function playTongueFlickSound() {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const t = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(1450, t);
+    osc.frequency.exponentialRampToValueAtTime(180, t + 0.045);
+
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1600, t);
+    filter.Q.setValueAtTime(4.0, t);
+
+    gain.gain.setValueAtTime(0.045, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(t);
+    osc.stop(t + 0.06);
   }
 
   // Multi-harmonic harp pluck chord triggered when user interacts with web or clicks 'Pluck Web'
@@ -868,6 +923,213 @@
   }
 
   // ==========================================================================
+  // 10. ANIMATED CHAMELEON: INDEPENDENT EYE TRACKING, CAMOUFLAGE & TONGUE FLICK
+  // ==========================================================================
+  function initChameleon() {
+    if (!chameleonContainer) return;
+
+    // Direct click on chameleon triggers an alert tongue flick & instant color ripple
+    chameleonContainer.addEventListener('click', (e) => {
+      e.stopPropagation();
+      getAudioContext();
+
+      // Quick elastic tongue strike towards cursor position
+      triggerTongueFlick(e.clientX, e.clientY);
+
+      // Color flash reaction
+      chameleonContainer.classList.add('color-ripple');
+      setTimeout(() => {
+        chameleonContainer.classList.remove('color-ripple');
+      }, 700);
+    });
+  }
+
+  // Trigger chameleon tongue strike towards a target screen position
+  function triggerTongueFlick(targetScreenX, targetScreenY) {
+    if (chamState.isTongueFlicking || !chameleonSvg || !chamTongueGroup) return;
+
+    let localX = 350;
+    let localY = 50;
+
+    try {
+      const ctm = chameleonSvg.getScreenCTM();
+      if (ctm) {
+        const pt = chameleonSvg.createSVGPoint();
+        pt.x = targetScreenX !== undefined ? targetScreenX : mousePos.x;
+        pt.y = targetScreenY !== undefined ? targetScreenY : mousePos.y;
+        const localPt = pt.matrixTransform(ctm.inverse());
+        localX = localPt.x;
+        localY = localPt.y;
+      }
+    } catch (err) {
+      localX = 320;
+      localY = 60;
+    }
+
+    // Clamp maximum tongue strike reach
+    const mouthX = 244;
+    const mouthY = 117;
+    const dx = localX - mouthX;
+    const dy = localY - mouthY;
+    const dist = Math.hypot(dx, dy);
+    const maxReach = 560;
+
+    if (dist > maxReach) {
+      localX = mouthX + (dx / dist) * maxReach;
+      localY = mouthY + (dy / dist) * maxReach;
+    }
+
+    chamState.tongueTargetLocal = { x: localX, y: localY };
+    chamState.isTongueFlicking = true;
+    chamState.tongueProgress = 0;
+    chamState.tonguePhase = 'extending';
+    chamTongueGroup.style.opacity = '1';
+
+    if (isAudioEnabled) {
+      playTongueFlickSound();
+    }
+  }
+
+  // Main chameleon update loop: runs every frame via updateClock
+  function updateChameleon() {
+    if (!chameleonContainer || !chameleonSvg) return;
+
+    // 1. DUAL INDEPENDENT EYE TRACKING
+    // Screen position of the primary conical turret eye
+    const primaryRect = chamEyePrimary ? chamEyePrimary.getBoundingClientRect() : null;
+    const eyePx = primaryRect ? primaryRect.left + primaryRect.width / 2 : window.innerWidth * 0.15;
+    const eyePy = primaryRect ? primaryRect.top + primaryRect.height / 2 : window.innerHeight * 0.85;
+
+    // Vectors to Butterfly and User Mouse Cursor
+    const dxBf = bfState.x - eyePx;
+    const dyBf = bfState.y - eyePy;
+    const distBf = Math.hypot(dxBf, dyBf);
+
+    const dxMouse = mousePos.x - eyePx;
+    const dyMouse = mousePos.y - eyePy;
+    const distMouse = Math.hypot(dxMouse, dyMouse);
+
+    // Dynamic focus selection:
+    // When mouse is close to the chameleon (< 340px), primary eye locks onto the cursor.
+    // Otherwise, it watches the glowing cyan butterfly fluttering across the screen.
+    let primaryTargetX = dxBf;
+    let primaryTargetY = dyBf;
+    let secTargetX = dxMouse;
+    let secTargetY = dyMouse;
+
+    if (distMouse < 340) {
+      primaryTargetX = dxMouse;
+      primaryTargetY = dyMouse;
+      secTargetX = dxBf;
+      secTargetY = dyBf;
+    }
+
+    // Micro-saccades (authentic sudden glance shifts of reptiles)
+    chamState.saccadeTimer++;
+    if (chamState.saccadeTimer > 100 + Math.random() * 80) {
+      chamState.saccadeTimer = 0;
+      chamState.saccadeOffset = {
+        x: (Math.random() - 0.5) * 0.8,
+        y: (Math.random() - 0.5) * 0.8,
+      };
+    }
+
+    // Primary Conical Turret Eye calculation
+    const primAngle = Math.atan2(primaryTargetY, primaryTargetX);
+    const primMaxShift = 3.2;
+    const primDesiredX = Math.cos(primAngle) * primMaxShift + chamState.saccadeOffset.x;
+    const primDesiredY = Math.sin(primAngle) * primMaxShift + chamState.saccadeOffset.y;
+
+    chamState.primaryPupil.x += (primDesiredX - chamState.primaryPupil.x) * 0.14;
+    chamState.primaryPupil.y += (primDesiredY - chamState.primaryPupil.y) * 0.14;
+
+    if (chamPupilPrimaryGroup) {
+      chamPupilPrimaryGroup.setAttribute(
+        'transform',
+        `translate(${chamState.primaryPupil.x.toFixed(2)}, ${chamState.primaryPupil.y.toFixed(2)})`
+      );
+    }
+
+    // Secondary Distal Eye calculation (independent swiveling movement)
+    const secAngle = Math.atan2(secTargetY, secTargetX);
+    const secMaxShift = 1.9;
+    const secDesiredX = Math.cos(secAngle) * secMaxShift;
+    const secDesiredY = Math.sin(secAngle) * secMaxShift;
+
+    chamState.secondaryPupil.x += (secDesiredX - chamState.secondaryPupil.x) * 0.1;
+    chamState.secondaryPupil.y += (secDesiredY - chamState.secondaryPupil.y) * 0.1;
+
+    if (chamPupilSecondaryGroup) {
+      chamPupilSecondaryGroup.setAttribute(
+        'transform',
+        `translate(${chamState.secondaryPupil.x.toFixed(2)}, ${chamState.secondaryPupil.y.toFixed(2)})`
+      );
+    }
+
+    // 2. TONGUE FLICK ANIMATION DYNAMICS
+    if (chamState.isTongueFlicking) {
+      const mouthX = 244;
+      const mouthY = 117;
+      const tgt = chamState.tongueTargetLocal;
+
+      if (chamState.tonguePhase === 'extending') {
+        chamState.tongueProgress += 0.22; // High-velocity strike (~5 frames)
+        if (chamState.tongueProgress >= 1) {
+          chamState.tongueProgress = 1;
+          chamState.tonguePhase = 'retracting';
+
+          // If butterfly is in proximity of tongue tip, trigger startle dart & stardust burst!
+          if (distBf < 320) {
+            bfState.startleTimer = 38;
+            bfState.vx += (Math.random() - 0.5) * 4;
+            bfState.vy -= 3.8;
+            spawnSparkles(bfState.x, bfState.y, 6);
+          }
+        }
+      } else if (chamState.tonguePhase === 'retracting') {
+        chamState.tongueProgress -= 0.15; // Elastic snapback
+        if (chamState.tongueProgress <= 0) {
+          chamState.tongueProgress = 0;
+          chamState.tonguePhase = 'idle';
+          chamState.isTongueFlicking = false;
+          if (chamTongueGroup) chamTongueGroup.style.opacity = '0';
+        }
+      }
+
+      const p = chamState.tongueProgress;
+      // Slight arc control point for biological spring curvature
+      const currTipX = mouthX + (tgt.x - mouthX) * p;
+      const currTipY = mouthY + (tgt.y - mouthY) * p;
+      const midX = (mouthX + currTipX) / 2 + (tgt.y < mouthY ? -12 : 12) * p;
+      const midY = (mouthY + currTipY) / 2 - 18 * p;
+
+      if (chamTonguePath) {
+        chamTonguePath.setAttribute('d', `M ${mouthX} ${mouthY} Q ${midX.toFixed(1)} ${midY.toFixed(1)} ${currTipX.toFixed(1)} ${currTipY.toFixed(1)}`);
+      }
+      if (chamTongueTip) {
+        chamTongueTip.setAttribute('cx', currTipX.toFixed(1));
+        chamTongueTip.setAttribute('cy', currTipY.toFixed(1));
+      }
+      if (chamTongueTipPad) {
+        chamTongueTipPad.setAttribute('cx', currTipX.toFixed(1));
+        chamTongueTipPad.setAttribute('cy', currTipY.toFixed(1));
+      }
+    } else {
+      // Occasional random tongue flick animation
+      chamState.autoFlickCountdown--;
+      if (chamState.autoFlickCountdown <= 0) {
+        chamState.autoFlickCountdown = 850 + Math.floor(Math.random() * 800); // 14-28 seconds
+        // Target butterfly or near mouse position
+        if (distBf < 480 && Math.random() < 0.72) {
+          triggerTongueFlick(bfState.x, bfState.y);
+        } else {
+          triggerTongueFlick(mousePos.x, mousePos.y);
+        }
+      }
+    }
+  }
+
+  // ==========================================================================
   // INITIALIZATION
   // ==========================================================================
   function init() {
@@ -877,6 +1139,7 @@
     initMouseInteractions();
     initAmbientParticles();
     initButterfly();
+    initChameleon();
 
     // Start real-time analog clock loop
     requestAnimationFrame(updateClock);
