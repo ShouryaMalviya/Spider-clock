@@ -506,6 +506,8 @@ body {
 .hud-bar {
   position: absolute;
   bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   gap: 16px;
@@ -514,9 +516,11 @@ body {
   -webkit-backdrop-filter: blur(18px);
   border: 1px solid rgba(125, 211, 252, 0.25);
   border-radius: 9999px;
-  padding: 8px 18px 8px 22px;
+  padding: 10px 22px 10px 24px;
   box-shadow: 0 12px 30px rgba(2, 12, 24, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.25);
   z-index: 10;
+  width: max-content;
+  max-width: calc(100vw - 32px);
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
@@ -526,10 +530,11 @@ body {
   gap: 6px;
   font-family: var(--font-mono);
   letter-spacing: 0.06em;
-  font-size: 15px;
+  font-size: 16px;
   color: #FFFFFF;
   border-right: 1px solid rgba(125, 211, 252, 0.25);
-  padding-right: 16px;
+  padding-right: 18px;
+  white-space: nowrap;
 }
 
 .digital-time {
@@ -551,7 +556,7 @@ body {
 .hud-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .hud-btn {
@@ -560,12 +565,15 @@ body {
   border-radius: 9999px;
   color: #FFFFFF;
   font-family: var(--font-dial);
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 500;
-  padding: 6px 14px;
+  line-height: 1.25;
+  padding: 10px 20px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
   cursor: pointer;
   transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
   outline: none;
@@ -591,6 +599,9 @@ body {
 
 .hud-icon {
   display: block;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 /* ==========================================================================
@@ -607,27 +618,33 @@ body {
 
   .hud-bar {
     bottom: 14px;
-    padding: 6px 12px;
-    gap: 8px;
+    padding: 8px 14px;
+    gap: 10px;
     flex-wrap: wrap;
     justify-content: center;
   }
 
   .time-readout {
-    font-size: 13px;
-    padding-right: 10px;
+    font-size: 14px;
+    padding-right: 12px;
   }
 
   .hud-btn {
-    font-size: 12px;
-    padding: 5px 10px;
+    font-size: 14px;
+    padding: 8px 14px;
+    gap: 6px;
+  }
+
+  .hud-icon {
+    width: 17px;
+    height: 17px;
   }
 }
 
 @media (max-height: 540px) {
   .hud-bar {
     bottom: 6px;
-    transform: scale(0.85);
+    transform: translateX(-50%) scale(0.85);
   }
 }
 
