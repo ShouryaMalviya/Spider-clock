@@ -464,6 +464,58 @@
           <filter id="tongueGlow" x="-50%" y="-50%" width="200%" height="200%">
             <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#f43f5e" flood-opacity="0.8"/>
           </filter>
+
+          <!-- Minor Insects (Jewel Beetle & Firefly) Gradients & Glow Filters -->
+          <linearGradient id="beetleElytraGrad" x1="0%" y1="0%" x2="100%" y2="80%">
+            <stop offset="0%" stop-color="#34d399"/>
+            <stop offset="28%" stop-color="#10b981"/>
+            <stop offset="60%" stop-color="#0284c7"/>
+            <stop offset="85%" stop-color="#d97706"/>
+            <stop offset="100%" stop-color="#064e3b"/>
+          </linearGradient>
+
+          <linearGradient id="beetleThoraxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#fbbf24"/>
+            <stop offset="45%" stop-color="#059669"/>
+            <stop offset="100%" stop-color="#042f2e"/>
+          </linearGradient>
+
+          <linearGradient id="beetleInnerWingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#e0f2fe" stop-opacity="0.85"/>
+            <stop offset="60%" stop-color="#38bdf8" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#a3e635" stop-opacity="0.3"/>
+          </linearGradient>
+
+          <filter id="beetleGlow" x="-40%" y="-40%" width="180%" height="180%">
+            <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#10b981" flood-opacity="0.65"/>
+          </filter>
+
+          <radialGradient id="fireflyLanternGrad" cx="42%" cy="42%" r="58%">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="35%" stop-color="#a3e635"/>
+            <stop offset="75%" stop-color="#22c55e"/>
+            <stop offset="100%" stop-color="#065f46"/>
+          </radialGradient>
+
+          <linearGradient id="fireflyWingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#e0f2fe" stop-opacity="0.88"/>
+            <stop offset="55%" stop-color="#38bdf8" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#a3e635" stop-opacity="0.35"/>
+          </linearGradient>
+
+          <linearGradient id="fireflyBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1e293b"/>
+            <stop offset="60%" stop-color="#0f172a"/>
+            <stop offset="100%" stop-color="#020617"/>
+          </linearGradient>
+
+          <filter id="fireflyLanternGlow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="2.8" result="blur"/>
+            <feMerge>
+              <feMergeNode in="blur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
         </defs>
 
         <!-- Stylized Corner Perch Branch -->
@@ -566,13 +618,131 @@
             </g>
           </g>
 
-          <!-- Dynamic Chameleon Tongue (Snaps out with elastic trajectory) -->
-          <g id="chamTongueGroup" class="cham-tongue-group" style="opacity: 0; pointer-events: none;">
-            <path id="chamTonguePath" d="M 244 117 L 244 117" stroke="#f43f5e" stroke-width="2.8" stroke-linecap="round" fill="none" filter="url(#tongueGlow)"/>
-            <circle id="chamTongueTip" cx="244" cy="117" r="4" fill="#fb7185" stroke="#f43f5e" stroke-width="1" filter="url(#tongueGlow)"/>
-            <circle id="chamTongueTipPad" cx="244" cy="117" r="1.8" fill="#fff1f2"/>
+        </g>
+
+        <!-- LAYER 8: Two Minor Insects Around Chameleon (Jewel Beetle & Hovering Firefly) -->
+        <g id="chamMinorInsects" class="cham-minor-insects">
+          <!-- Insect 1: Luminous Jewel Beetle on Perch Branch (Emerald & Gold Chrysomelid) -->
+          <g id="chamBeetleGroup" class="cham-insect cham-beetle" transform="translate(280, 140) rotate(-7)" aria-label="Luminous Jewel Beetle" role="img" tabindex="0">
+            <!-- Beetle Aura / Soft Glow -->
+            <ellipse cx="1" cy="0" rx="12" ry="7.5" fill="rgba(16, 185, 129, 0.15)" filter="url(#beetleGlow)"/>
+
+            <!-- 6 Articulated Clawed Legs Gripping Branch -->
+            <g class="beetle-legs" stroke="#042f2e" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+              <!-- Left / Lower Legs (stepping onto branch bark) -->
+              <path class="beetle-leg beetle-leg-1" d="M -4 2 Q -6 6, -8 8.5 L -9 10" />
+              <path class="beetle-leg beetle-leg-2" d="M 0 3 Q -1 6.5, -2 9 L -2.5 11" />
+              <path class="beetle-leg beetle-leg-3" d="M 5 2.5 Q 6.5 6, 7.5 9 L 8.5 10.5" />
+              <!-- Right / Upper Legs -->
+              <path class="beetle-leg beetle-leg-4" d="M -4 -2 Q -6 -5.5, -8 -7.5 L -9 -9" />
+              <path class="beetle-leg beetle-leg-5" d="M 0 -3 Q 0 -6, 1 -8 L 1.5 -10" />
+              <path class="beetle-leg beetle-leg-6" d="M 5 -2.5 Q 6.5 -5.5, 7.5 -7.5 L 8 -9" />
+            </g>
+
+            <!-- Underbody / Sternum -->
+            <ellipse class="beetle-sternum" cx="1" cy="0" rx="9" ry="5" fill="#021c14" />
+
+            <!-- Membranous Under-Wings (Revealed when startled/flapping) -->
+            <g id="beetleInnerWings" class="beetle-inner-wings">
+              <path class="beetle-inner-wing beetle-inner-wing-l" d="M -1 -2 Q 2 -11, 7 -10 Q 11 -7, 6 -1 Z" fill="url(#beetleInnerWingGrad)" stroke="rgba(224, 242, 254, 0.7)" stroke-width="0.3"/>
+              <path class="beetle-inner-wing beetle-inner-wing-r" d="M -1 2 Q 2 11, 7 10 Q 11 7, 6 1 Z" fill="url(#beetleInnerWingGrad)" stroke="rgba(224, 242, 254, 0.7)" stroke-width="0.3"/>
+            </g>
+
+            <!-- Elytra (Iridescent Metallic Wing Covers) -->
+            <!-- Left Elytron -->
+            <path id="beetleElytronL" class="beetle-elytron beetle-elytron-l" d="M -2.5 -0.2 C -2.5 -4.5, 3.5 -5.2, 8.5 -3.2 C 9.8 -1.8, 9.8 -0.4, 9 -0.2 Z" fill="url(#beetleElytraGrad)" stroke="#064e3b" stroke-width="0.5"/>
+            <!-- Right Elytron -->
+            <path id="beetleElytronR" class="beetle-elytron beetle-elytron-r" d="M -2.5 0.2 C -2.5 4.5, 3.5 5.2, 8.5 3.2 C 9.8 1.8, 9.8 0.4, 9 0.2 Z" fill="url(#beetleElytraGrad)" stroke="#064e3b" stroke-width="0.5"/>
+
+            <!-- Elytra Central Suture Line -->
+            <line x1="-2.5" y1="0" x2="8.8" y2="0" stroke="#022c22" stroke-width="0.6"/>
+
+            <!-- Metallic Specular Sheen Lines -->
+            <path class="beetle-sheen" d="M -1 -2.6 Q 3 -3.8, 7 -2" stroke="rgba(255, 255, 255, 0.65)" stroke-width="0.65" fill="none" stroke-linecap="round"/>
+            <path class="beetle-sheen" d="M -1 2.6 Q 3 3.8, 7 2" stroke="rgba(255, 255, 255, 0.45)" stroke-width="0.5" fill="none" stroke-linecap="round"/>
+
+            <!-- Delicate Punctate Gold Striae Spots -->
+            <circle cx="2" cy="-2.5" r="0.55" fill="#fef08a" opacity="0.85"/>
+            <circle cx="5" cy="-1.8" r="0.5" fill="#fef08a" opacity="0.8"/>
+            <circle cx="2" cy="2.5" r="0.55" fill="#fef08a" opacity="0.85"/>
+            <circle cx="5" cy="1.8" r="0.5" fill="#fef08a" opacity="0.8"/>
+
+            <!-- Pronotum (Thorax Shield) with Glossy Finish -->
+            <path class="beetle-pronotum" d="M -2.5 -4.2 C -5 -4.2, -6.5 -3.2, -7 0 C -6.5 3.2, -5 4.2, -2.5 4.2 Z" fill="url(#beetleThoraxGrad)" stroke="#065f46" stroke-width="0.5"/>
+            <ellipse cx="-4.5" cy="-1.5" rx="1.6" ry="1.2" fill="rgba(255, 255, 255, 0.42)"/>
+
+            <!-- Head & Compound Eyes -->
+            <ellipse class="beetle-head" cx="-7.8" cy="0" rx="1.8" ry="2" fill="#042f2e"/>
+            <!-- Ruby Eyes with Specular Highlights -->
+            <circle class="beetle-eye" cx="-8.2" cy="-1.6" r="0.8" fill="#b91c1c"/>
+            <circle cx="-8.4" cy="-1.8" r="0.3" fill="#ffffff"/>
+            <circle class="beetle-eye" cx="-8.2" cy="1.6" r="0.8" fill="#b91c1c"/>
+            <circle cx="-8.4" cy="1.4" r="0.3" fill="#ffffff"/>
+
+            <!-- Articulated Twitching Antennae -->
+            <path class="beetle-antenna beetle-antenna-l" d="M -9 -0.8 Q -13 -2.8, -15 -1 Q -16.5 0.5, -18 -0.4" stroke="#34d399" stroke-width="0.6" fill="none" stroke-linecap="round"/>
+            <circle cx="-18" cy="-0.4" r="0.55" fill="#6ee7b7" filter="url(#glowSubtle)"/>
+
+            <path class="beetle-antenna beetle-antenna-r" d="M -9 0.8 Q -13 2.8, -15 1 Q -16.5 -0.5, -18 0.4" stroke="#34d399" stroke-width="0.6" fill="none" stroke-linecap="round"/>
+            <circle cx="-18" cy="0.4" r="0.55" fill="#6ee7b7" filter="url(#glowSubtle)"/>
           </g>
 
+          <!-- Insect 2: Gossamer Firefly Hovering in Front of Snout (Bioluminescent Mayfly/Firefly) -->
+          <g id="chamFireflyGroup" class="cham-insect cham-firefly" transform="translate(270, 78)" aria-label="Gossamer Hovering Firefly" role="img" tabindex="0">
+            <!-- Trailing Slender Legs -->
+            <g class="firefly-legs" stroke="rgba(125, 211, 252, 0.65)" stroke-width="0.55" stroke-linecap="round" fill="none">
+              <path class="firefly-leg" d="M -2 1.5 Q -3 4.2, -4 6.8" />
+              <path class="firefly-leg" d="M 0 1.8 Q 0 5.2, -1 7.8" />
+              <path class="firefly-leg" d="M 2.2 1.6 Q 3.2 5, 4.2 8.2" />
+            </g>
+
+            <!-- Gossamer Wings (High-frequency flutter) -->
+            <!-- Upper Forewing -->
+            <g class="firefly-wing-group firefly-wing-top">
+              <path class="firefly-wing-surface" d="M -0.5 -1.2 C -1 -7.5, 6 -11, 11.5 -8 C 13.5 -5.2, 10.5 -2, 1 -0.5 Z" fill="url(#fireflyWingGrad)" stroke="#7dd3fc" stroke-width="0.45" filter="url(#glowSubtle)"/>
+              <path d="M 0 -1 Q 5.5 -5.5, 10.5 -7 M 1.2 -1 Q 6 -3.8, 9.5 -4.2" stroke="rgba(224, 242, 254, 0.65)" stroke-width="0.32" fill="none"/>
+            </g>
+
+            <!-- Lower Hindwing -->
+            <g class="firefly-wing-group firefly-wing-bot">
+              <path class="firefly-wing-surface" d="M 0 0.8 C 1 6.5, 7.5 8.5, 10.5 6.2 C 11.5 4, 8.5 1.8, 1 0.4 Z" fill="url(#fireflyWingGrad)" stroke="#7dd3fc" stroke-width="0.45" filter="url(#glowSubtle)"/>
+              <path d="M 0.5 0.8 Q 5.2 4.2, 9.2 4.8" stroke="rgba(224, 242, 254, 0.55)" stroke-width="0.32" fill="none"/>
+            </g>
+
+            <!-- Slender Chitin Body & Thorax -->
+            <ellipse class="firefly-thorax" cx="0" cy="0" rx="2.8" ry="2.2" fill="url(#fireflyBodyGrad)"/>
+            <line x1="-2" y1="0" x2="2" y2="0" stroke="#38bdf8" stroke-width="0.5" opacity="0.8"/>
+
+            <!-- Bioluminescent Pulsing Lantern Abdomen -->
+            <ellipse id="fireflyLanternAura" class="firefly-lantern-aura" cx="5.8" cy="0.8" rx="6.5" ry="4.5" fill="rgba(163, 230, 53, 0.35)" filter="url(#fireflyLanternGlow)"/>
+            <ellipse id="fireflyLantern" class="firefly-lantern" cx="5.6" cy="0.8" rx="4.6" ry="3" fill="url(#fireflyLanternGrad)" filter="url(#fireflyLanternGlow)"/>
+            <ellipse cx="4.8" cy="0.4" rx="2.4" ry="1.3" fill="#ffffff" opacity="0.95"/>
+            <!-- Lantern Chitin Segments -->
+            <path d="M 3.2 -1.5 Q 3.8 0.8, 3.2 3 M 5.5 -1.8 Q 6.1 0.8, 5.5 3.5" stroke="rgba(5, 78, 59, 0.45)" stroke-width="0.45" fill="none"/>
+
+            <!-- Head & Glowing Eyes -->
+            <circle class="firefly-head" cx="-3.4" cy="-0.2" r="1.6" fill="#020617"/>
+            <circle class="firefly-eye" cx="-4" cy="-0.9" r="0.75" fill="#38bdf8"/>
+            <circle cx="-4.2" cy="-1.1" r="0.28" fill="#ffffff"/>
+            <circle class="firefly-eye" cx="-4" cy="0.6" r="0.75" fill="#38bdf8"/>
+            <circle cx="-4.2" cy="0.4" r="0.28" fill="#ffffff"/>
+
+            <!-- Fine Curved Antennae -->
+            <path class="firefly-antenna firefly-antenna-l" d="M -4.5 -0.8 Q -7 -2.4, -9 -1.8" stroke="#7dd3fc" stroke-width="0.5" fill="none" stroke-linecap="round"/>
+            <path class="firefly-antenna firefly-antenna-r" d="M -4.5 0.5 Q -7 2.1, -9 1.5" stroke="#7dd3fc" stroke-width="0.5" fill="none" stroke-linecap="round"/>
+
+            <!-- Ambient Micro Spores / Sparks Orbiting Firefly -->
+            <circle class="firefly-spark spark-1" cx="3" cy="-7" r="0.65" fill="#a3e635" opacity="0.85" filter="url(#glowSubtle)"/>
+            <circle class="firefly-spark spark-2" cx="12" cy="2" r="0.5" fill="#38bdf8" opacity="0.8" filter="url(#glowSubtle)"/>
+            <circle class="firefly-spark spark-3" cx="7" cy="8" r="0.6" fill="#a3e635" opacity="0.75" filter="url(#glowSubtle)"/>
+          </g>
+        </g>
+
+        <!-- Dynamic Chameleon Tongue (Snaps out with elastic trajectory over insects) -->
+        <g id="chamTongueGroup" class="cham-tongue-group" style="opacity: 0; pointer-events: none;">
+          <path id="chamTonguePath" d="M 244 117 L 244 117" stroke="#f43f5e" stroke-width="2.8" stroke-linecap="round" fill="none" filter="url(#tongueGlow)"/>
+          <circle id="chamTongueTip" cx="244" cy="117" r="4" fill="#fb7185" stroke="#f43f5e" stroke-width="1" filter="url(#tongueGlow)"/>
+          <circle id="chamTongueTipPad" cx="244" cy="117" r="1.8" fill="#fff1f2"/>
         </g>
       </svg>
     </div>

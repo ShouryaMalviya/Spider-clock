@@ -52,6 +52,8 @@
   const chamTonguePath = document.getElementById('chamTonguePath');
   const chamTongueTip = document.getElementById('chamTongueTip');
   const chamTongueTipPad = document.getElementById('chamTongueTipPad');
+  const chamBeetleGroup = document.getElementById('chamBeetleGroup');
+  const chamFireflyGroup = document.getElementById('chamFireflyGroup');
 
   // --- State ---
   let isSmoothSweep = true;
@@ -70,7 +72,10 @@
     tongueProgress: 0,
     tonguePhase: 'idle',
     tongueTargetLocal: { x: 244, y: 117 },
-    autoFlickCountdown: 700 + Math.floor(Math.random() * 600),
+    autoFlickCountdown: 600 + Math.floor(Math.random() * 500),
+    forcedFocusTarget: null,
+    gazeTimer: 0,
+    gazeChoice: 0,
   };
 
   // --- Butterfly Autonomous Simulation State ---
@@ -437,6 +442,68 @@
 
     osc.start(t);
     osc.stop(t + 0.06);
+  }
+
+  // Crisp synthesized delicate chitin scuttle / tap sound for the Jewel Beetle
+  function playBeetleScuttleSound() {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const t = ctx.currentTime;
+
+    [0, 0.024, 0.052].forEach((offset, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(1800 + idx * 420, t + offset);
+      osc.frequency.exponentialRampToValueAtTime(450, t + offset + 0.022);
+
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(2200, t + offset);
+      filter.Q.setValueAtTime(3.8, t + offset);
+
+      gain.gain.setValueAtTime(0.026, t + offset);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + offset + 0.024);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(t + offset);
+      osc.stop(t + offset + 0.028);
+    });
+  }
+
+  // Luminous gossamer firefly hover flutter / fairy chime sound
+  function playFireflyBuzzSound() {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const t = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1174.66, t); // D6
+    osc.frequency.exponentialRampToValueAtTime(1760.0, t + 0.08); // A6
+    osc.frequency.exponentialRampToValueAtTime(2349.32, t + 0.16); // D7
+
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1800, t);
+    filter.Q.setValueAtTime(4.8, t);
+
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.linearRampToValueAtTime(0.038, t + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(t);
+    osc.stop(t + 0.24);
   }
 
   // Multi-harmonic harp pluck chord triggered when user interacts with web or clicks 'Pluck Web'
@@ -923,7 +990,7 @@
   }
 
   // ==========================================================================
-  // 10. ANIMATED CHAMELEON: INDEPENDENT EYE TRACKING, CAMOUFLAGE & TONGUE FLICK
+  // 10. ANIMATED CHAMELEON & MINOR INSECTS: DUAL EYE TRACKING, TONGUE FLICK & ECOSYSTEM
   // ==========================================================================
   function initChameleon() {
     if (!chameleonContainer) return;
@@ -942,6 +1009,117 @@
         chameleonContainer.classList.remove('color-ripple');
       }, 700);
     });
+
+    // --- Interactive Minor Insect 1: Jewel Beetle on Perch Branch ---
+    if (chamBeetleGroup) {
+      chamBeetleGroup.addEventListener('click', (e) => {
+        e.stopPropagation();
+        getAudioContext();
+        triggerBeetleReaction();
+      });
+
+      chamBeetleGroup.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          getAudioContext();
+          triggerBeetleReaction();
+        }
+      });
+    }
+
+    // --- Interactive Minor Insect 2: Gossamer Hovering Firefly ---
+    if (chamFireflyGroup) {
+      chamFireflyGroup.addEventListener('click', (e) => {
+        e.stopPropagation();
+        getAudioContext();
+        triggerFireflyReaction();
+      });
+
+      chamFireflyGroup.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          getAudioContext();
+          triggerFireflyReaction();
+        }
+      });
+    }
+  }
+
+  // Trigger startled scuttle and chameleon response for the Jewel Beetle
+  function triggerBeetleReaction() {
+    if (!chamBeetleGroup) return;
+
+    // Beetle startled response: elytra pop open & scuttle
+    chamBeetleGroup.classList.remove('beetle-startled');
+    void chamBeetleGroup.offsetWidth; // Force CSS reflow
+    chamBeetleGroup.classList.add('beetle-startled');
+    setTimeout(() => {
+      chamBeetleGroup.classList.remove('beetle-startled');
+    }, 850);
+
+    if (isAudioEnabled) {
+      playBeetleScuttleSound();
+    }
+
+    // Direct chameleon's primary turret eye to stare at the beetle
+    chamState.forcedFocusTarget = { type: 'beetle', duration: 75 };
+
+    // Chameleon snaps its tongue towards the beetle perched on the branch!
+    triggerTongueFlickLocal(280, 140);
+  }
+
+  // Trigger evasive hover dodge and chameleon response for the Firefly
+  function triggerFireflyReaction() {
+    if (!chamFireflyGroup) return;
+
+    // Firefly evasive loop dodge
+    chamFireflyGroup.classList.remove('firefly-startled');
+    void chamFireflyGroup.offsetWidth; // Force CSS reflow
+    chamFireflyGroup.classList.add('firefly-startled');
+    setTimeout(() => {
+      chamFireflyGroup.classList.remove('firefly-startled');
+    }, 650);
+
+    // Emit luminous bioluminescent sparkle motes
+    const rect = chamFireflyGroup.getBoundingClientRect();
+    spawnSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2, 5);
+
+    if (isAudioEnabled) {
+      playFireflyBuzzSound();
+    }
+
+    // Direct chameleon's primary turret eye to stare at the hovering firefly
+    chamState.forcedFocusTarget = { type: 'firefly', duration: 75 };
+
+    // Chameleon snaps its tongue towards the hovering firefly!
+    triggerTongueFlickLocal(270, 78);
+  }
+
+  // Trigger tongue strike directly to local SVG coordinate space (e.g. towards insects)
+  function triggerTongueFlickLocal(localX, localY) {
+    if (chamState.isTongueFlicking || !chameleonSvg || !chamTongueGroup) return;
+
+    const mouthX = 244;
+    const mouthY = 117;
+    const dx = localX - mouthX;
+    const dy = localY - mouthY;
+    const dist = Math.hypot(dx, dy);
+    const maxReach = 560;
+
+    if (dist > maxReach) {
+      localX = mouthX + (dx / dist) * maxReach;
+      localY = mouthY + (dy / dist) * maxReach;
+    }
+
+    chamState.tongueTargetLocal = { x: localX, y: localY };
+    chamState.isTongueFlicking = true;
+    chamState.tongueProgress = 0;
+    chamState.tonguePhase = 'extending';
+    chamTongueGroup.style.opacity = '1';
+
+    if (isAudioEnabled) {
+      playTongueFlickSound();
+    }
   }
 
   // Trigger chameleon tongue strike towards a target screen position
@@ -966,35 +1144,14 @@
       localY = 60;
     }
 
-    // Clamp maximum tongue strike reach
-    const mouthX = 244;
-    const mouthY = 117;
-    const dx = localX - mouthX;
-    const dy = localY - mouthY;
-    const dist = Math.hypot(dx, dy);
-    const maxReach = 560;
-
-    if (dist > maxReach) {
-      localX = mouthX + (dx / dist) * maxReach;
-      localY = mouthY + (dy / dist) * maxReach;
-    }
-
-    chamState.tongueTargetLocal = { x: localX, y: localY };
-    chamState.isTongueFlicking = true;
-    chamState.tongueProgress = 0;
-    chamState.tonguePhase = 'extending';
-    chamTongueGroup.style.opacity = '1';
-
-    if (isAudioEnabled) {
-      playTongueFlickSound();
-    }
+    triggerTongueFlickLocal(localX, localY);
   }
 
   // Main chameleon update loop: runs every frame via updateClock
   function updateChameleon() {
     if (!chameleonContainer || !chameleonSvg) return;
 
-    // 1. DUAL INDEPENDENT EYE TRACKING
+    // 1. DUAL INDEPENDENT REPTILIAN EYE TRACKING
     // Screen position of the primary conical turret eye
     const primaryRect = chamEyePrimary ? chamEyePrimary.getBoundingClientRect() : null;
     const eyePx = primaryRect ? primaryRect.left + primaryRect.width / 2 : window.innerWidth * 0.15;
@@ -1009,19 +1166,56 @@
     const dyMouse = mousePos.y - eyePy;
     const distMouse = Math.hypot(dxMouse, dyMouse);
 
+    // Screen positions and relative vectors to Minor Insects
+    const fireflyRect = chamFireflyGroup ? chamFireflyGroup.getBoundingClientRect() : null;
+    const beetleRect = chamBeetleGroup ? chamBeetleGroup.getBoundingClientRect() : null;
+
+    const dxFf = fireflyRect ? (fireflyRect.left + fireflyRect.width / 2) - eyePx : 68;
+    const dyFf = fireflyRect ? (fireflyRect.top + fireflyRect.height / 2) - eyePy : -38;
+
+    const dxBt = beetleRect ? (beetleRect.left + beetleRect.width / 2) - eyePx : 78;
+    const dyBt = beetleRect ? (beetleRect.top + beetleRect.height / 2) - eyePy : 32;
+
     // Dynamic focus selection:
-    // When mouse is close to the chameleon (< 340px), primary eye locks onto the cursor.
-    // Otherwise, it watches the glowing cyan butterfly fluttering across the screen.
     let primaryTargetX = dxBf;
     let primaryTargetY = dyBf;
     let secTargetX = dxMouse;
     let secTargetY = dyMouse;
 
-    if (distMouse < 340) {
+    // Override primary target if actively interacting with one of the minor insects
+    if (chamState.forcedFocusTarget && chamState.forcedFocusTarget.duration > 0) {
+      chamState.forcedFocusTarget.duration--;
+      if (chamState.forcedFocusTarget.type === 'beetle') {
+        primaryTargetX = dxBt;
+        primaryTargetY = dyBt;
+      } else if (chamState.forcedFocusTarget.type === 'firefly') {
+        primaryTargetX = dxFf;
+        primaryTargetY = dyFf;
+      }
+    } else if (distMouse < 340) {
       primaryTargetX = dxMouse;
       primaryTargetY = dyMouse;
       secTargetX = dxBf;
       secTargetY = dyBf;
+    }
+
+    // Secondary eye autonomous glancing cycle (inquires hovering firefly or crawling beetle)
+    chamState.gazeTimer = (chamState.gazeTimer || 0) + 1;
+    if (chamState.gazeTimer > 180 + Math.random() * 80) {
+      chamState.gazeTimer = 0;
+      chamState.gazeChoice = Math.random();
+    }
+
+    if (!chamState.forcedFocusTarget || chamState.forcedFocusTarget.duration <= 0) {
+      if (chamState.gazeChoice < 0.38) {
+        // Glances at the hovering firefly
+        secTargetX = dxFf;
+        secTargetY = dyFf;
+      } else if (chamState.gazeChoice < 0.72) {
+        // Glances at the jewel beetle on branch
+        secTargetX = dxBt;
+        secTargetY = dyBt;
+      }
     }
 
     // Micro-saccades (authentic sudden glance shifts of reptiles)
@@ -1078,7 +1272,25 @@
           chamState.tongueProgress = 1;
           chamState.tonguePhase = 'retracting';
 
-          // If butterfly is in proximity of tongue tip, trigger startle dart & stardust burst!
+          // Reactive evasive dodges when tongue reaches apex:
+          // Check proximity to Firefly (local ~270, 78)
+          if (Math.hypot(tgt.x - 270, tgt.y - 78) < 42 && chamFireflyGroup) {
+            chamFireflyGroup.classList.remove('firefly-startled');
+            void chamFireflyGroup.offsetWidth;
+            chamFireflyGroup.classList.add('firefly-startled');
+            if (fireflyRect) {
+              spawnSparkles(fireflyRect.left + fireflyRect.width / 2, fireflyRect.top + fireflyRect.height / 2, 4);
+            }
+          }
+
+          // Check proximity to Beetle (local ~280, 140)
+          if (Math.hypot(tgt.x - 280, tgt.y - 140) < 42 && chamBeetleGroup) {
+            chamBeetleGroup.classList.remove('beetle-startled');
+            void chamBeetleGroup.offsetWidth;
+            chamBeetleGroup.classList.add('beetle-startled');
+          }
+
+          // Check proximity to Butterfly
           if (distBf < 320) {
             bfState.startleTimer = 38;
             bfState.vx += (Math.random() - 0.5) * 4;
@@ -1115,14 +1327,23 @@
         chamTongueTipPad.setAttribute('cy', currTipY.toFixed(1));
       }
     } else {
-      // Occasional random tongue flick animation
+      // Occasional autonomous tongue flick animation
       chamState.autoFlickCountdown--;
       if (chamState.autoFlickCountdown <= 0) {
-        chamState.autoFlickCountdown = 850 + Math.floor(Math.random() * 800); // 14-28 seconds
-        // Target butterfly or near mouse position
-        if (distBf < 480 && Math.random() < 0.72) {
+        chamState.autoFlickCountdown = 750 + Math.floor(Math.random() * 650); // 12-24 seconds
+        const roll = Math.random();
+
+        if (roll < 0.32) {
+          // Playful snap at the hovering firefly!
+          triggerTongueFlickLocal(270, 78);
+        } else if (roll < 0.58) {
+          // Playful snap at the jewel beetle on the branch!
+          triggerTongueFlickLocal(280, 140);
+        } else if (distBf < 480 && roll < 0.88) {
+          // Snap towards hovering butterfly
           triggerTongueFlick(bfState.x, bfState.y);
         } else {
+          // Snap towards mouse cursor
           triggerTongueFlick(mousePos.x, mousePos.y);
         }
       }
