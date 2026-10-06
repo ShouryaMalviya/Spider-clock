@@ -54,6 +54,11 @@
   const chamTongueTipPad = document.getElementById('chamTongueTipPad');
   const chamBeetleGroup = document.getElementById('chamBeetleGroup');
   const chamFireflyGroup = document.getElementById('chamFireflyGroup');
+  const spidermanContainer = document.getElementById('spidermanContainer');
+  const spidermanPendulum = document.getElementById('spidermanPendulum');
+  const spidermanFigure = document.getElementById('spidermanFigure');
+  const spideyLensLeft = document.getElementById('spideyLensLeft');
+  const spideyLensRight = document.getElementById('spideyLensRight');
 
   // --- State ---
   let isSmoothSweep = true;
@@ -553,6 +558,36 @@
       osc.stop(noteTime + 1.4);
       overtone.stop(noteTime + 1.4);
     });
+  }
+
+  // Crisp synthesized web-thwip / zip sound effect for Spider-Man entrances & interactions
+  function playWebThwipSound() {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const t = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(3200, t);
+    osc.frequency.exponentialRampToValueAtTime(380, t + 0.08);
+
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(2600, t);
+    filter.frequency.exponentialRampToValueAtTime(800, t + 0.08);
+    filter.Q.setValueAtTime(3.5, t);
+
+    gain.gain.setValueAtTime(0.045, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(t);
+    osc.stop(t + 0.1);
   }
 
   // ==========================================================================
@@ -1351,6 +1386,140 @@
   }
 
   // ==========================================================================
+  // 13. SPIDER-MAN: AUTONOMOUS LIFECYCLE & EYE INTERACTIVITY
+  // ==========================================================================
+  const spideyState = {
+    phase: 'hidden', // 'hidden', 'entering', 'hanging', 'exiting'
+    hangDuration: 22000, // 22 seconds hanging & swinging
+    hiddenDuration: 24000, // 24 seconds hidden off-screen
+    timerId: null,
+    isInteracting: false,
+  };
+
+  // Drop down smoothly from top edge into hanging position
+  function dropInSpiderMan() {
+    if (!spidermanContainer || spideyState.phase === 'entering' || spideyState.phase === 'hanging') return;
+
+    spideyState.phase = 'entering';
+    spidermanContainer.classList.remove('spiderman-hidden', 'spiderman-exiting');
+    spidermanContainer.classList.add('spiderman-entering');
+
+    if (isAudioEnabled) {
+      playWebThwipSound();
+    }
+
+    clearTimeout(spideyState.timerId);
+    spideyState.timerId = setTimeout(() => {
+      spideyState.phase = 'hanging';
+      spidermanContainer.classList.remove('spiderman-entering');
+      spidermanContainer.classList.add('spiderman-hanging');
+
+      // Schedule autonomous exit
+      spideyState.timerId = setTimeout(pullUpSpiderMan, spideyState.hangDuration);
+    }, 1150);
+  }
+
+  // Pull himself back up out of the frame
+  function pullUpSpiderMan() {
+    if (!spidermanContainer || spideyState.phase === 'hidden' || spideyState.phase === 'exiting') return;
+
+    spideyState.phase = 'exiting';
+    spidermanContainer.classList.remove('spiderman-entering', 'spiderman-hanging');
+    spidermanContainer.classList.add('spiderman-exiting');
+
+    if (isAudioEnabled) {
+      playWebThwipSound();
+    }
+
+    clearTimeout(spideyState.timerId);
+    spideyState.timerId = setTimeout(() => {
+      spideyState.phase = 'hidden';
+      spidermanContainer.classList.remove('spiderman-exiting');
+      spidermanContainer.classList.add('spiderman-hidden');
+
+      // Schedule next autonomous entrance
+      spideyState.timerId = setTimeout(dropInSpiderMan, spideyState.hiddenDuration);
+    }, 800);
+  }
+
+  // Trigger expressive lens squint or wink
+  function triggerSpideyEyeReaction(type = 'squint') {
+    if (!spidermanFigure) return;
+
+    if (type === 'wink') {
+      spidermanFigure.classList.remove('wink', 'squint');
+      spidermanFigure.classList.add('wink');
+      setTimeout(() => {
+        spidermanFigure.classList.remove('wink');
+        spidermanFigure.classList.add('squint');
+        setTimeout(() => spidermanFigure.classList.remove('squint'), 380);
+      }, 320);
+    } else {
+      spidermanFigure.classList.add('squint');
+      setTimeout(() => {
+        spidermanFigure.classList.remove('squint');
+      }, 450);
+    }
+  }
+
+  // Initialize Spider-Man events and lifecycle
+  function initSpiderMan() {
+    if (!spidermanContainer || !spidermanFigure) return;
+
+    // Interactive click: playful elastic recoil bounce + wink + web-thwip sound
+    spidermanFigure.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (spideyState.isInteracting) return;
+      spideyState.isInteracting = true;
+
+      spidermanFigure.classList.remove('bounce');
+      void spidermanFigure.offsetWidth; // Force DOM reflow to restart bounce
+      spidermanFigure.classList.add('bounce');
+
+      triggerSpideyEyeReaction('wink');
+
+      if (isAudioEnabled) {
+        playWebThwipSound();
+      }
+
+      setTimeout(() => {
+        spidermanFigure.classList.remove('bounce');
+        spideyState.isInteracting = false;
+      }, 700);
+    });
+
+    // Keyboard accessibility: space or enter triggers interaction when focused
+    spidermanFigure.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        spidermanFigure.click();
+      }
+    });
+
+    // Screen click: subtle focus/squint reaction if Spider-Man is currently hanging
+    window.addEventListener('click', () => {
+      if (spideyState.phase === 'hanging' && !spideyState.isInteracting) {
+        triggerSpideyEyeReaction('squint');
+      }
+    });
+
+    // Autonomous subtle eye micro-blinks while hanging
+    setInterval(() => {
+      if (spideyState.phase === 'hanging' && !spideyState.isInteracting) {
+        if (Math.random() < 0.35) {
+          triggerSpideyEyeReaction(Math.random() < 0.3 ? 'wink' : 'squint');
+        }
+      }
+    }, 4500);
+
+    // Global helper to summon Spider-Man on demand (or test in console)
+    window.summonSpiderMan = dropInSpiderMan;
+
+    // Initial dramatic entrance after 2.5 seconds
+    setTimeout(dropInSpiderMan, 2500);
+  }
+
+  // ==========================================================================
   // INITIALIZATION
   // ==========================================================================
   function init() {
@@ -1361,6 +1530,7 @@
     initAmbientParticles();
     initButterfly();
     initChameleon();
+    initSpiderMan();
 
     // Start real-time analog clock loop
     requestAnimationFrame(updateClock);
@@ -1372,3 +1542,4 @@
     init();
   }
 })();
+

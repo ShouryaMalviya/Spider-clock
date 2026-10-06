@@ -745,6 +745,193 @@
           <circle id="chamTongueTipPad" cx="244" cy="117" r="1.8" fill="#fff1f2"/>
         </g>
       </svg>
+    <!-- Animated Hanging Spider-Man Character (Upside down with pendulum swing) -->
+    <div class="spiderman-container spiderman-hidden" id="spidermanContainer" aria-label="Spider-Man Hanging Upside Down" role="img">
+      <div class="spiderman-pendulum" id="spidermanPendulum">
+        <!-- Hanging Web Strand anchored to top edge of screen -->
+        <div class="spiderman-web-strand" id="spidermanWebStrand">
+          <div class="spiderman-web-core"></div>
+          <div class="spiderman-web-shimmer"></div>
+        </div>
+
+        <!-- Stylized Upside Down Spider-Man Figure -->
+        <div class="spiderman-figure" id="spidermanFigure" tabindex="0" role="button" aria-label="Spider-Man (Click or hover to interact)">
+          <svg id="spidermanSvg" class="spiderman-svg" viewBox="0 0 160 210" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <!-- Spider-Man Crimson Suit Gradient -->
+              <linearGradient id="spideyRedGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ef4444"/>
+                <stop offset="50%" stop-color="#dc2626"/>
+                <stop offset="100%" stop-color="#991b1b"/>
+              </linearGradient>
+
+              <!-- Spider-Man Deep Blue Suit Gradient -->
+              <linearGradient id="spideyBlueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#3b82f6"/>
+                <stop offset="60%" stop-color="#1d4ed8"/>
+                <stop offset="100%" stop-color="#0f172a"/>
+              </linearGradient>
+
+              <!-- Expressive Mask Lens Luminous White/Cyan Gradient -->
+              <linearGradient id="spideyLensGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="70%" stop-color="#f0f9ff"/>
+                <stop offset="100%" stop-color="#bae6fd"/>
+              </linearGradient>
+
+              <!-- Web Strand Luminous Glow Filter -->
+              <filter id="spideyWebGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#38bdf8" flood-opacity="0.6"/>
+              </filter>
+            </defs>
+
+            <!-- Silk Strand Attachment wrapping around boots at top (y = 14 to 24) -->
+            <g id="spideyWebAttachment">
+              <ellipse cx="80" cy="18" rx="10" ry="4" fill="none" stroke="#ffffff" stroke-width="2.2" opacity="0.95" filter="url(#spideyWebGlow)"/>
+              <path d="M 72 17 Q 80 23 88 17 Q 80 11 72 17" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.9"/>
+              <path d="M 75 14 L 80 22 L 85 14" fill="none" stroke="#e0f2fe" stroke-width="1.6" opacity="0.85"/>
+            </g>
+
+            <!-- Legs & Boots (Upside Down Acrobat Diamond Crouch) -->
+            <g id="spideyLegsGroup">
+              <!-- Left Leg Shin & Red Boot (extending to knee at left) -->
+              <path d="M 74 22 L 46 44 L 41 49 C 39 53 43 56 47 54 L 75 32 Z" fill="url(#spideyRedGrad)" stroke="#0f172a" stroke-width="1.2"/>
+              <!-- Left Boot Web Lines -->
+              <path d="M 70 25 L 45 46 M 64 28 L 47 51 M 55 35 L 43 53" stroke="#0f172a" stroke-width="0.8" opacity="0.65"/>
+
+              <!-- Right Leg Shin & Red Boot (extending to knee at right) -->
+              <path d="M 86 22 L 114 44 L 119 49 C 121 53 117 56 113 54 L 85 32 Z" fill="url(#spideyRedGrad)" stroke="#0f172a" stroke-width="1.2"/>
+              <!-- Right Boot Web Lines -->
+              <path d="M 90 25 L 115 46 M 96 28 L 113 51 M 105 35 L 117 53" stroke="#0f172a" stroke-width="0.8" opacity="0.65"/>
+
+              <!-- Left Thigh (Blue suit from knee 44,50 inward to pelvis 68,76) -->
+              <path d="M 44 50 C 42 55 48 64 68 76 L 73 70 C 58 58 50 50 44 50 Z" fill="url(#spideyBlueGrad)" stroke="#0f172a" stroke-width="1.2"/>
+
+              <!-- Right Thigh (Blue suit from knee 116,50 inward to pelvis 92,76) -->
+              <path d="M 116 50 C 118 55 112 64 92 76 L 87 70 C 102 58 110 50 116 50 Z" fill="url(#spideyBlueGrad)" stroke="#0f172a" stroke-width="1.2"/>
+            </g>
+
+            <!-- Waist & Pelvis (Hanging upside down, belt band at y = 72 to 82) -->
+            <g id="spideyWaist">
+              <path d="M 66 72 C 75 75 85 75 94 72 L 93 82 C 85 86 75 86 67 82 Z" fill="url(#spideyRedGrad)" stroke="#0f172a" stroke-width="1.2"/>
+              <line x1="80" y1="73" x2="80" y2="84" stroke="#0f172a" stroke-width="0.9" opacity="0.7"/>
+              <path d="M 70 76 Q 80 80 90 76" stroke="#0f172a" stroke-width="0.8" fill="none" opacity="0.7"/>
+            </g>
+
+            <!-- Torso (Shoulders at bottom around 120, waist at top around 80) -->
+            <g id="spideyTorso">
+              <!-- Blue Lateral Flanks -->
+              <path d="M 67 82 L 56 114 C 54 118 60 122 66 123 L 71 85 Z" fill="url(#spideyBlueGrad)" stroke="#0f172a" stroke-width="1"/>
+              <path d="M 93 82 L 104 114 C 106 118 100 122 94 123 L 89 85 Z" fill="url(#spideyBlueGrad)" stroke="#0f172a" stroke-width="1"/>
+
+              <!-- Red Center Chest & Abdomen Panel -->
+              <path d="M 71 82 L 89 82 L 94 123 C 86 127 74 127 66 123 Z" fill="url(#spideyRedGrad)" stroke="#0f172a" stroke-width="1.2"/>
+
+              <!-- Webbing grid on red torso -->
+              <g stroke="#0f172a" stroke-width="0.8" opacity="0.65" fill="none">
+                <line x1="80" y1="82" x2="80" y2="125"/>
+                <path d="M 70 92 Q 80 96 90 92"/>
+                <path d="M 68 103 Q 80 108 92 103"/>
+                <path d="M 67 114 Q 80 120 93 114"/>
+                <line x1="75" y1="83" x2="72" y2="124"/>
+                <line x1="85" y1="83" x2="88" y2="124"/>
+              </g>
+
+              <!-- Iconic Chest Spider Insignia -->
+              <g id="spideyChestSpider" transform="translate(80, 105)">
+                <ellipse cx="0" cy="0" rx="2.8" ry="4.2" fill="#0f172a"/>
+                <!-- Upper Legs (pointing toward waist) -->
+                <path d="M -2 -1 Q -7 -5 -11 -7" stroke="#0f172a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                <path d="M -1.8 -0.2 Q -8 -2 -12 -3" stroke="#0f172a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                <path d="M 2 -1 Q 7 -5 11 -7" stroke="#0f172a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                <path d="M 1.8 -0.2 Q 8 -2 12 -3" stroke="#0f172a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                <!-- Lower Legs (pointing toward head) -->
+                <path d="M -2 1 Q -8 5 -12 8" stroke="#0f172a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                <path d="M -1.5 2 Q -6 8 -10 12" stroke="#0f172a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                <path d="M 2 1 Q 8 5 12 8" stroke="#0f172a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                <path d="M 1.5 2 Q 6 8 10 12" stroke="#0f172a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+              </g>
+            </g>
+
+            <!-- Arms -->
+            <g id="spideyArms">
+              <!-- Left Arm: Bends upward, hand resting comfortably near thigh -->
+              <g id="spideyArmLeft">
+                <path d="M 58 116 L 38 100 L 44 94 L 64 112 Z" fill="url(#spideyBlueGrad)" stroke="#0f172a" stroke-width="1.1"/>
+                <path d="M 39 101 L 32 85 C 31 80 37 77 42 81 L 46 95 Z" fill="url(#spideyRedGrad)" stroke="#0f172a" stroke-width="1.1"/>
+                <line x1="39" y1="100" x2="33" y2="84" stroke="#0f172a" stroke-width="0.7" opacity="0.6"/>
+                <path d="M 37 94 Q 41 93 45 95" stroke="#0f172a" stroke-width="0.7" fill="none" opacity="0.6"/>
+                <ellipse cx="34" cy="80" rx="4" ry="5" fill="url(#spideyRedGrad)" stroke="#0f172a" stroke-width="1"/>
+              </g>
+
+              <!-- Right Arm: Extending casually with classic 'Thwip' hand gesture -->
+              <g id="spideyArmRight">
+                <path d="M 102 116 L 122 108 L 126 114 L 98 123 Z" fill="url(#spideyBlueGrad)" stroke="#0f172a" stroke-width="1.1"/>
+                <path d="M 122 108 L 136 122 C 139 125 137 129 133 131 L 121 116 Z" fill="url(#spideyRedGrad)" stroke="#0f172a" stroke-width="1.1"/>
+                <line x1="122" y1="110" x2="134" y2="124" stroke="#0f172a" stroke-width="0.7" opacity="0.6"/>
+                <!-- Thwip Hand (Index + Pinky extended, middle + ring curled) -->
+                <g id="spideyThwipHand" transform="translate(136, 126)">
+                  <ellipse cx="0" cy="0" rx="3.5" ry="4" fill="url(#spideyRedGrad)" stroke="#0f172a" stroke-width="0.9"/>
+                  <!-- Extended Index Finger -->
+                  <path d="M -1 2 L -2 9 L 0 9 L 1 2" fill="url(#spideyRedGrad)" stroke="#0f172a" stroke-width="0.8"/>
+                  <!-- Extended Pinky Finger -->
+                  <path d="M 2 0 L 5 6 L 6.5 5 L 3.5 -1" fill="url(#spideyRedGrad)" stroke="#0f172a" stroke-width="0.8"/>
+                  <!-- Curled Middle & Ring Fingers -->
+                  <circle cx="0.5" cy="2.5" r="1.4" fill="url(#spideyRedGrad)" stroke="#0f172a" stroke-width="0.7"/>
+                  <circle cx="1.8" cy="1.6" r="1.3" fill="url(#spideyRedGrad)" stroke="#0f172a" stroke-width="0.7"/>
+                  <!-- Thumb Extended -->
+                  <path d="M -2 -1 L -5 1 L -5 3 L -1 1" fill="url(#spideyRedGrad)" stroke="#0f172a" stroke-width="0.8"/>
+                </g>
+              </g>
+            </g>
+
+            <!-- Neck -->
+            <path d="M 73 124 L 73 134 C 76 135 84 135 87 134 L 87 124 Z" fill="url(#spideyRedGrad)" stroke="#0f172a" stroke-width="1"/>
+
+            <!-- Head & Mask (Hanging Upside Down: Top of head is 130, Chin is at 188) -->
+            <g id="spideyHeadGroup">
+              <!-- Mask Base Oval/Teardrop Shape -->
+              <path id="spideyHeadMask" class="spidey-head-mask" d="M 80 130 C 97 130 105 142 104 158 C 103 174 93 188 80 188 C 67 188 57 174 56 158 C 55 142 63 130 80 130 Z" fill="url(#spideyRedGrad)" stroke="#0f172a" stroke-width="1.5"/>
+
+              <!-- Web pattern radiating from mask center -->
+              <g stroke="#0f172a" stroke-width="0.85" opacity="0.7" fill="none">
+                <line x1="80" y1="130" x2="80" y2="188"/>
+                <path d="M 80 160 L 61 138"/>
+                <path d="M 80 160 L 99 138"/>
+                <path d="M 80 160 L 56 152"/>
+                <path d="M 80 160 L 104 152"/>
+                <path d="M 80 160 L 58 168"/>
+                <path d="M 80 160 L 102 168"/>
+                <path d="M 80 160 L 67 184"/>
+                <path d="M 80 160 L 93 184"/>
+
+                <!-- Concentric Webbing Arcs -->
+                <path d="M 70 142 Q 80 146 90 142"/>
+                <path d="M 64 150 Q 80 155 96 150"/>
+                <path d="M 62 168 Q 80 163 98 168"/>
+                <path d="M 67 178 Q 80 173 93 178"/>
+              </g>
+
+              <!-- Interactive Mask Eyes / Expressive White Lenses -->
+              <g id="spideyEyes" class="spidey-eyes">
+                <!-- Left Eye (Viewer's Left) -->
+                <g id="spideyEyeLeft" class="spidey-eye-group">
+                  <path class="spidey-eye-contour" d="M 76 150 C 72 143 62 143 59 154 C 57 163 66 172 75 165 C 77 161 77 154 76 150 Z" fill="#0f172a"/>
+                  <path id="spideyLensLeft" class="spidey-lens spidey-lens-left" d="M 74 151 C 71 146 64 146 62 153 C 60 160 67 167 73 162 C 75 159 75 154 74 151 Z" fill="url(#spideyLensGrad)" filter="url(#spideyWebGlow)"/>
+                  <path d="M 65 149 Q 71 148 72 153" stroke="#ffffff" stroke-width="0.9" fill="none" opacity="0.9"/>
+                </g>
+
+                <!-- Right Eye (Viewer's Right) -->
+                <g id="spideyEyeRight" class="spidey-eye-group">
+                  <path class="spidey-eye-contour" d="M 84 150 C 88 143 98 143 101 154 C 103 163 94 172 85 165 C 83 161 83 154 84 150 Z" fill="#0f172a"/>
+                  <path id="spideyLensRight" class="spidey-lens spidey-lens-right" d="M 86 151 C 89 146 96 146 98 153 C 100 160 93 167 87 162 C 85 159 85 154 86 151 Z" fill="url(#spideyLensGrad)" filter="url(#spideyWebGlow)"/>
+                  <path d="M 95 149 Q 89 148 88 153" stroke="#ffffff" stroke-width="0.9" fill="none" opacity="0.9"/>
+                </g>
+              </g>
+            </g>
+          </svg>
+        </div>
+      </div>
     </div>
 
     <!-- Floating Glassmorphic HUD Pill Bar -->

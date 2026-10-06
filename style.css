@@ -1235,3 +1235,259 @@ body {
   }
 }
 
+/* ==========================================================================
+   13. Animated Hanging Spider-Man (Upside Down Pendulum Swing & Dynamic Entrance/Exit)
+   ========================================================================== */
+
+/* Root Container (Positioned hanging from top edge of the screen, slightly off-center) */
+.spiderman-container {
+  position: absolute;
+  top: 0;
+  right: clamp(24px, 8.5vw, 130px);
+  width: 140px;
+  height: 420px;
+  z-index: 8;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* Dynamic Entrance / Exit Lifecycle States */
+.spiderman-container.spiderman-hidden {
+  transform: translateY(-460px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 0.85s cubic-bezier(0.55, 0.055, 0.675, 0.19), opacity 0.4s ease, visibility 0.85s;
+}
+
+.spiderman-container.spiderman-entering {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: transform 1.15s cubic-bezier(0.34, 1.32, 0.64, 1), opacity 0.3s ease;
+}
+
+.spiderman-container.spiderman-hanging {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.spiderman-container.spiderman-exiting {
+  transform: translateY(-460px);
+  opacity: 0.85;
+  pointer-events: none;
+  transition: transform 0.8s cubic-bezier(0.55, 0.055, 0.675, 0.19), opacity 0.7s ease;
+}
+
+/* Pendulum Assembly (Anchored precisely at the ceiling attachment point) */
+.spiderman-pendulum {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 0; /* Web top anchor at screen ceiling */
+  animation: spideyPendulumSwing 4.6s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Gentle Pendulum Swing Keyframes */
+@keyframes spideyPendulumSwing {
+  0% {
+    transform: rotate(-3.6deg);
+  }
+  100% {
+    transform: rotate(3.6deg);
+  }
+}
+
+/* Single Suspended Web Strand descending from top edge */
+.spiderman-web-strand {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1.8px;
+  height: 180px;
+  pointer-events: none;
+}
+
+.spiderman-web-core {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.85) 60%,
+    #ffffff 100%
+  );
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.85), 0 0 14px rgba(56, 189, 248, 0.5);
+}
+
+/* Traveling Shimmer Light Pulse sliding down the web strand */
+.spiderman-web-shimmer {
+  position: absolute;
+  top: 0;
+  left: -2px;
+  width: 5.5px;
+  height: 50px;
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.95), transparent);
+  border-radius: 50%;
+  animation: spideyWebPulse 3.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes spideyWebPulse {
+  0% {
+    top: -50px;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+/* Spider-Man Figure Assembly (With secondary anatomical micro-sway) */
+.spiderman-figure {
+  position: absolute;
+  top: 175px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 130px;
+  height: 175px;
+  transform-origin: 50% 12%; /* Hanging pivot around boots/ankles */
+  animation: spideyBodyMicroSway 4.6s ease-in-out infinite alternate;
+  pointer-events: auto;
+  cursor: pointer;
+  filter: drop-shadow(0 14px 28px rgba(2, 12, 24, 0.8));
+  transition: filter 0.25s ease;
+  will-change: transform;
+}
+
+@keyframes spideyBodyMicroSway {
+  0% {
+    transform: translateX(-50%) rotate(1.6deg);
+  }
+  100% {
+    transform: translateX(-50%) rotate(-1.6deg);
+  }
+}
+
+.spiderman-figure:hover {
+  filter: drop-shadow(0 0 14px rgba(239, 68, 68, 0.55)) drop-shadow(0 16px 32px rgba(2, 12, 24, 0.85));
+}
+
+.spiderman-figure:focus-visible {
+  outline: 2px dashed #38bdf8;
+  outline-offset: 4px;
+}
+
+.spiderman-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Interactive Elastic Recoil Bounce on Click */
+.spiderman-figure.bounce {
+  animation: spideyInteractiveBounce 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes spideyInteractiveBounce {
+  0% {
+    transform: translateX(-50%) scale(1);
+  }
+  30% {
+    transform: translateX(-50%) translateY(-14px) scale(0.96, 1.04);
+  }
+  60% {
+    transform: translateX(-50%) translateY(4px) scale(1.02, 0.98);
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* ==========================================================================
+   Spider-Man Mask Eyes & Expressive Lens Reactivity
+   ========================================================================== */
+
+.spidey-lens {
+  transform-origin: center center;
+  transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  will-change: transform;
+}
+
+.spidey-eye-contour {
+  transform-origin: center center;
+  transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+/* Hover Squint: White lenses narrow into focused, heroic smirk */
+.spiderman-figure:hover .spidey-lens-left,
+.spiderman-figure:hover .spidey-lens-right {
+  transform: scaleY(0.48) scaleX(0.92);
+}
+
+.spiderman-figure:hover .spidey-eye-contour {
+  transform: scaleY(0.7) scaleX(0.96);
+}
+
+/* Programmatic/Alert Squint State */
+.spiderman-figure.squint .spidey-lens-left,
+.spiderman-figure.squint .spidey-lens-right {
+  transform: scaleY(0.36) scaleX(0.9);
+}
+
+.spiderman-figure.squint .spidey-eye-contour {
+  transform: scaleY(0.62) scaleX(0.94);
+}
+
+/* Playful Wink Reaction (Right eye winks shut) */
+.spiderman-figure.wink .spidey-lens-right {
+  transform: scaleY(0.08) scaleX(0.85);
+}
+
+.spiderman-figure.wink .spidey-eye-contour:last-of-type {
+  transform: scaleY(0.3) scaleX(0.9);
+}
+
+/* ==========================================================================
+   Responsive Scaling for Smaller Screens
+   ========================================================================== */
+@media (max-width: 900px) {
+  .spiderman-container {
+    right: 16px;
+    transform-origin: top right;
+    transform: scale(0.88);
+  }
+  .spiderman-container.spiderman-hidden {
+    transform: translateY(-460px) scale(0.88);
+  }
+  .spiderman-container.spiderman-exiting {
+    transform: translateY(-460px) scale(0.88);
+  }
+}
+
+@media (max-width: 600px) {
+  .spiderman-container {
+    right: 8px;
+    transform-origin: top right;
+    transform: scale(0.76);
+  }
+  .spiderman-container.spiderman-hidden {
+    transform: translateY(-460px) scale(0.76);
+  }
+  .spiderman-container.spiderman-exiting {
+    transform: translateY(-460px) scale(0.76);
+  }
+}
