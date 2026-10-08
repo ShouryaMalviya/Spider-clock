@@ -934,6 +934,85 @@
       </div>
     </div>
 
+    <!-- Celestial Twin Stars in Top-Right Corner -->
+    <div class="corner-stars-container" id="cornerStars" aria-label="Celestial Twin Stars" role="img" tabindex="0">
+      <!-- Star 1: Primary Radiant Starlight -->
+      <div class="corner-star corner-star-primary" id="cornerStar1" title="Radiant Celestial Star">
+        <svg class="star-svg" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="starGlowGrad1" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+              <stop offset="25%" stop-color="#bae6fd" stop-opacity="0.9"/>
+              <stop offset="55%" stop-color="#38bdf8" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="#0284c7" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="starCoreGrad1" cx="40%" cy="40%" r="60%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="55%" stop-color="#e0f2fe"/>
+              <stop offset="100%" stop-color="#7dd3fc"/>
+            </radialGradient>
+            <filter id="starBloom1" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2.2" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <!-- Ethereal Radial Halo Aura -->
+          <circle cx="30" cy="30" r="24" fill="url(#starGlowGrad1)" opacity="0.85"/>
+          <!-- Secondary diagonal 4-point micro flare at 45 deg -->
+          <path class="star-flare-secondary" d="M 30 16 Q 30 30 44 30 Q 30 30 30 44 Q 30 30 16 30 Q 30 30 30 16 Z" fill="#e0f2fe" opacity="0.65" transform="rotate(45, 30, 30)"/>
+          <!-- Primary 4-point Diamond Starlight Flare -->
+          <path class="star-flare-primary" d="M 30 4 Q 30 30 56 30 Q 30 30 30 56 Q 30 30 4 30 Q 30 30 30 4 Z" fill="url(#starCoreGrad1)" filter="url(#starBloom1)"/>
+          <!-- Diamond Specular Gleam Facet -->
+          <path d="M 30 14 L 33 30 L 30 46 L 27 30 Z" fill="#ffffff" opacity="0.92"/>
+          <path d="M 14 30 L 30 33 L 46 30 L 30 27 Z" fill="#ffffff" opacity="0.92"/>
+          <!-- Luminous Star Center Core -->
+          <circle cx="30" cy="30" r="3.2" fill="#ffffff"/>
+          <circle cx="30" cy="30" r="1.5" fill="#ffffff" filter="url(#starBloom1)"/>
+        </svg>
+      </div>
+
+      <!-- Star 2: Companion Twinkling Starlight -->
+      <div class="corner-star corner-star-secondary" id="cornerStar2" title="Companion Celestial Star">
+        <svg class="star-svg" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="starGlowGrad2" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+              <stop offset="30%" stop-color="#c7d2fe" stop-opacity="0.85"/>
+              <stop offset="65%" stop-color="#818cf8" stop-opacity="0.4"/>
+              <stop offset="100%" stop-color="#4f46e5" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="starCoreGrad2" cx="40%" cy="40%" r="60%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="60%" stop-color="#f0f9ff"/>
+              <stop offset="100%" stop-color="#a5f3fc"/>
+            </radialGradient>
+            <filter id="starBloom2" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="1.8" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <!-- Ethereal Radial Halo Aura -->
+          <circle cx="25" cy="25" r="20" fill="url(#starGlowGrad2)" opacity="0.8"/>
+          <!-- Secondary diagonal 4-point micro flare at 45 deg -->
+          <path class="star-flare-secondary" d="M 25 14 Q 25 25 36 25 Q 25 25 25 36 Q 25 25 14 25 Q 25 25 25 14 Z" fill="#e0e7ff" opacity="0.6" transform="rotate(45, 25, 25)"/>
+          <!-- Primary 4-point Diamond Starlight Flare -->
+          <path class="star-flare-primary" d="M 25 4 Q 25 25 46 25 Q 25 25 25 46 Q 25 25 4 25 Q 25 25 25 4 Z" fill="url(#starCoreGrad2)" filter="url(#starBloom2)"/>
+          <!-- Diamond Specular Gleam Facet -->
+          <path d="M 25 12 L 27.5 25 L 25 38 L 22.5 25 Z" fill="#ffffff" opacity="0.9"/>
+          <path d="M 12 25 L 25 27.5 L 38 25 L 25 22.5 Z" fill="#ffffff" opacity="0.9"/>
+          <!-- Luminous Star Center Core -->
+          <circle cx="25" cy="25" r="2.5" fill="#ffffff"/>
+          <circle cx="25" cy="25" r="1.2" fill="#ffffff" filter="url(#starBloom2)"/>
+        </svg>
+      </div>
+    </div>
+
     <!-- Floating Glassmorphic HUD Pill Bar -->
     <footer class="hud-bar" id="hudBar">
       <!-- Digital Time Readout -->

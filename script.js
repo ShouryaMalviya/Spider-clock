@@ -1520,6 +1520,48 @@
   }
 
   // ==========================================================================
+  // 14. CELESTIAL TWIN STARS INTERACTION (TOP-RIGHT CORNER)
+  // ==========================================================================
+  function initCornerStars() {
+    const starsContainer = document.getElementById('cornerStars');
+    if (!starsContainer) return;
+
+    starsContainer.addEventListener('click', () => {
+      // Celestial sparkling chime chord if ambient audio is enabled
+      if (soundEnabled && audioCtx) {
+        try {
+          const t = audioCtx.currentTime;
+          const starNotes = [1318.51, 1567.98, 2093.00]; // E6, G6, C7 high celestial chord
+          starNotes.forEach((freq, idx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, t + idx * 0.04);
+
+            gain.gain.setValueAtTime(0.035, t + idx * 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t + idx * 0.04 + 0.65);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(t + idx * 0.04);
+            osc.stop(t + idx * 0.04 + 0.7);
+          });
+        } catch (_) {}
+      }
+
+      // Visual starlight flare pulse animation
+      starsContainer.classList.remove('star-pulsing');
+      void starsContainer.offsetWidth; // Force DOM reflow
+      starsContainer.classList.add('star-pulsing');
+      setTimeout(() => {
+        starsContainer.classList.remove('star-pulsing');
+      }, 700);
+    });
+  }
+
+  // ==========================================================================
   // INITIALIZATION
   // ==========================================================================
   function init() {
@@ -1531,6 +1573,7 @@
     initButterfly();
     initChameleon();
     initSpiderMan();
+    initCornerStars();
 
     // Start real-time analog clock loop
     requestAnimationFrame(updateClock);
